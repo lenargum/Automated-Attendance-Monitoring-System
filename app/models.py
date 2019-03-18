@@ -15,4 +15,3 @@ class Student(db.Model):
     
     def __repr__(self):
         return '%s %s attend lecture at %s' % (self.name, self.surname, self.date)
-  
