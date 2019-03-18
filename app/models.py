@@ -1,3 +1,4 @@
+import random
 from app import db
 
 
@@ -23,5 +24,24 @@ class Token(db.Model):
     expired = db.Column(db.Boolean)
 
 
+class Attendance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    bs_group = db.Column(db.String())
+    name = db.Column(db.String())
+    surname = db.Column(db.String())
+
+
 def token_by_key(key):
     return Token.query.filter_by(key=key).first()
+
+
+def add_attendance(bs_group, name, surname):
+    print(bs_group, name, surname)
+    att = Attendance(bs_group=bs_group, name=name, surname=surname)
+    db.session.add(att)
+    db.session.commit()
+
+
+def reset_token():
+    query = Token.query.filter_by(expired=False)
+    
