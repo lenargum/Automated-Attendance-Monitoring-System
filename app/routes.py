@@ -1,4 +1,4 @@
-from flask import render_template, redirect
+from flask import render_template, redirect, url_for
 from app import app
 from app.forms import TokenConfirmForm
 from app import models
@@ -12,7 +12,15 @@ def index():
 
 @app.route("/qrcode_generate")
 def qr_code_generate():
-    return render_template("qrcode_generate.html")
+    token = models.get_token()
+    if not token:
+        return "No good tokens"
+    key = token.key
+    return render_template("qrcode_generate.html",
+                           key=url_for("qr_code_token", token_key=key, _external=app.config["SERVER_URL"]))
+
+# @app.route("/qrcode.png")
+# def gen_qrcode():
 
 
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])

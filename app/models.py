@@ -1,4 +1,4 @@
-import random
+from uuid import uuid4
 from app import db
 
 
@@ -36,12 +36,20 @@ def token_by_key(key):
 
 
 def add_attendance(bs_group, name, surname):
-    print(bs_group, name, surname)
     att = Attendance(bs_group=bs_group, name=name, surname=surname)
     db.session.add(att)
     db.session.commit()
 
 
 def reset_token():
-    query = Token.query.filter_by(expired=False)
-    
+    fresh_tokens = Token.query.filter_by(expired=False).paginate().items
+    for token in fresh_tokens:
+        token.expired = True
+    db.session.commit()
+    new_token = Token(key=uuid4(), expired=False)
+    db.session.add(new_token)
+    db.session.commit()
+
+
+def get_token():
+    return Token.query.filter_by(expired=False).first()
