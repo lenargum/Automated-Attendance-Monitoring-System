@@ -48,7 +48,7 @@ def add_student():
 @app.route("/data")
 def show_db():
     students = models.Student.query.all()
-    return render_template('test.html', string=[st.serialize() for st in students])
+    return render_template('view.html', students=[st.serialize() for st in students])
 
 
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
