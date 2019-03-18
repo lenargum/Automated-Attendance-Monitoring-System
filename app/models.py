@@ -15,6 +15,14 @@ class Student(db.Model):
     
     def __repr__(self):
         return '%s %s attend lecture at %s' % (self.name, self.surname, self.date)
+    
+    def serialize(self):
+        return {
+                'id': self.id,
+                'name': self.name,
+                'surname': self.surname,
+                'date': self.date
+                }
 
 
 class Token(db.Model):

@@ -1,7 +1,8 @@
-from flask import render_template
+from flask import render_template, request
 from app import app
 from app.forms import TokenConfirmForm
-from app import models
+from app import db
+from app.models import Student
 
 
 @app.route("/")
@@ -14,17 +15,30 @@ def index():
 def qr_code_generate():
     return render_template("qrcode_generate.html")
 
+@app.route("/add")
+def add_student():
+    name = request.args.get('name')
+    surname = request.args.get('surname')
+    date = request.args.get('date')
+    try:
+        student = Student(
+                name = name,
+                surname = surname,
+                date = date
+        )
+        db.session.add(student)
+        db.session.commit()
+        return 'Record was added. {}'.format(student.id)
+    except Exception as e:
+        return(str(e))
 
-@app.route("/qrcode/<token_key>")
-def qr_code_token(token_key):
-    token: models.Token = models.token_by_key(token_key)
-    if not token:
-        return render_template("qrcode_token_failed.html",
-                               title="Token error",
-                               error="This token does not exists")
-    if token.expired:
-        return render_template("qrcode_token_failed.html",
-                               title="Token error",
-                               error="this token has expired")
+@app.route("/data")
+def show_db():
+    students = Student.query.all()
+    return render_template('test.html', string=[st.serialize() for st in students])
+
+
+@app.route("/qrcode/<token>")
+def qr_code_token(token):
     form = TokenConfirmForm()
     return render_template("qrcode_token.html", token=token, form=form)
