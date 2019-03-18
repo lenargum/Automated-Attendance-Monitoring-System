@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Token info (about token {{ token }}) is going to be here</h3>
+    <h3>Token specific functions (about token {{ token }}) is going to be here</h3>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.group_name.label }}<br>
+            {{ form.group_name(size=32) }}
+        </p>
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+        </p>
+        <p>
+            {{ form.last_name.label }}<br>
+            {{ form.last_name(size=32) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
 {% endblock %}
