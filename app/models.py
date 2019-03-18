@@ -21,3 +21,7 @@ class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), unique=True)
     expired = db.Column(db.Boolean)
+
+
+def token_by_key(key):
+    return Token.query.filter_by(key=key).first()
