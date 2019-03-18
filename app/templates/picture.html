@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR</title>
+    <style>
+    section {
+        background: black;
+        color: white;
+        border-radius: 1em;
+        padding: 1em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%) }
+    </style>
+    <section>
+        <p align = "center"><a href="#" onclick="document.getElementById('captcha').src='qr.png?' + Math.random()"><button>generate</button></a></p>
+        <img src="qr.png" id="captcha" width = 512 height="512" alt="защитный код">
+    </section>
+</head>
+<body>
+
+</body>
+</html>
