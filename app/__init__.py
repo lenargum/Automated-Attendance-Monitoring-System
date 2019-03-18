@@ -8,4 +8,4 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 
 from app import routes
-from app import models.Student
+from app import models
