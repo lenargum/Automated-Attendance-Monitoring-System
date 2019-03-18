@@ -1,8 +1,8 @@
 from app import db
 
+
 class Student(db.Model):
     __tablename__ = 'students'
-    
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String())
     surname = db.Column(db.String())
@@ -15,3 +15,9 @@ class Student(db.Model):
     
     def __repr__(self):
         return '%s %s attend lecture at %s' % (self.name, self.surname, self.date)
+
+
+class Token(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String())
+    expired = db.Column(db.Boolean)
