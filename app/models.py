@@ -19,5 +19,5 @@ class Student(db.Model):
 
 class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String())
+    key = db.Column(db.String(), unique=True)
     expired = db.Column(db.Boolean)
