@@ -54,7 +54,7 @@ def reset_token():
     for token in fresh_tokens:
         token.expired = True
     db.session.commit()
-    new_token = Token(key=uuid4(), expired=False)
+    new_token = Token(key=str(uuid4()), expired=False)
     db.session.add(new_token)
     db.session.commit()
 

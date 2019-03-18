@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <script>
+        function update_token() {
+            // $.get("/qrcode_regen");
+            window.location.reload(false);
+        }
+    </script>
     <style>
     section {
         background: black;
@@ -14,7 +20,7 @@
         transform: translate(-50%, -50%) }
     </style>
     <section>
-    <p align = "center"><a href="#" onclick="location.reload()"><button>generate</button></a></p>
+    <p align = "center"><a href="#" onclick="update_token()"><button>generate</button></a></p>
     <img src="{{ qrcode(key) }}" id="qrcode" width=512 height=512 alt="QRcode">
     </section>
 {% endblock %}
