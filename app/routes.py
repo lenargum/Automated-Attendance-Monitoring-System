@@ -1,6 +1,7 @@
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, request
 from app import app
 from app.forms import TokenConfirmForm
+from app import db
 from app import models
 
 
@@ -19,8 +20,27 @@ def qr_code_generate():
     return render_template("qrcode_generate.html",
                            key=url_for("qr_code_token", token_key=key, _external=app.config["SERVER_URL"]))
 
-# @app.route("/qrcode.png")
-# def gen_qrcode():
+@app.route("/add")
+def add_student():
+    name = request.args.get('name')
+    surname = request.args.get('surname')
+    date = request.args.get('date')
+    try:
+        student = models.Student(
+                name = name,
+                surname = surname,
+                date = date
+        )
+        db.session.add(student)
+        db.session.commit()
+        return 'Record was added. {}'.format(student.id)
+    except Exception as e:
+        return(str(e))
+
+@app.route("/data")
+def show_db():
+    students = models.Student.query.all()
+    return render_template('test.html', string=[st.serialize() for st in students])
 
 
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
