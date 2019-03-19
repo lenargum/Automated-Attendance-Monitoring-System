@@ -47,6 +47,7 @@ def add_student():
     except Exception as e:
         return(str(e))
 
+
 @app.route("/data")
 def show_db():
     students = models.Student.query.all()
@@ -54,6 +55,7 @@ def show_db():
     return render_template('view.html', students=[st.serialize() for st in students])
 
 
+# Allow enter and submit attendance data if token is correct
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
 def qr_code_token(token_key):
     token: models.Token = models.token_by_key(token_key)
