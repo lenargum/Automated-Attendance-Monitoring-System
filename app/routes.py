@@ -8,7 +8,8 @@ from app import models
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("index.html")
+    attendance = models.Attendance.query.all()
+    return render_template("index.html", attendance=attendance)
 
 
 @app.route("/qrcode_generate")
@@ -48,6 +49,7 @@ def add_student():
 @app.route("/data")
 def show_db():
     students = models.Student.query.all()
+    print(students)
     return render_template('view.html', students=[st.serialize() for st in students])
 
 

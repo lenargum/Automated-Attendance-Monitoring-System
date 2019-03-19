@@ -2,4 +2,16 @@
 
 {% block content %}
     <h1>Home page</h1>
+  <table align="center" border="1">
+   <caption><b>Database</b></caption>
+   <tr>
+    <th>BS Group</th>
+    <th>Name</th>
+    <th>Surname</th>
+   </tr>
+  {% for at in attendance %}
+   <tr><td>34,5</td><td>3,5</td><td>36</td></tr>
+   <tr><td>{{at.bs_group}}</td><td>{{at.name}}</td><td>{{at.surname}}</td></tr>
+  {% endfor %}
+  </table>
 {% endblock %}
