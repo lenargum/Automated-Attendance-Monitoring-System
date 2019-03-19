@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Token specific functions (about token {{ token }}) is going to be here</h3>
+    <h3 align="center">Check your attendance</h3>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p align="center">
@@ -16,6 +16,6 @@
             {{ form.last_name.label }}<br>
             {{ form.last_name(size=32) }}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p align="center">{{ form.submit() }}</p>
     </form>
 {% endblock %}
