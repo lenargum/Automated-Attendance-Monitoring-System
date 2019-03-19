@@ -19,8 +19,9 @@ def qr_code_generate():
     if not token:
         return "No good tokens"
     key = token.key
+    hostname = request.headers["Host"]
     return render_template("qrcode_generate.html",
-                           key=url_for("qr_code_token", token_key=key, _external=app.config["SERVER_URL"]))
+                           key=url_for("qr_code_token", token_key=key, _external=hostname))
 
 
 @app.route("/qrcode_regen")
