@@ -26,12 +26,14 @@ class Student(db.Model):
                 }
 
 
+# Token model
 class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), unique=True)
     expired = db.Column(db.Boolean)
 
 
+# Attendance model
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bs_group = db.Column(db.String())
@@ -39,16 +41,19 @@ class Attendance(db.Model):
     surname = db.Column(db.String())
 
 
+# Get token by key
 def token_by_key(key):
     return Token.query.filter_by(key=key).first()
 
 
+# Add attendance entry
 def add_attendance(bs_group, name, surname):
     att = Attendance(bs_group=bs_group, name=name, surname=surname)
     db.session.add(att)
     db.session.commit()
 
 
+# Expire all tokens and add new one
 def reset_token():
     fresh_tokens = Token.query.filter_by(expired=False).paginate().items
     for token in fresh_tokens:
@@ -59,5 +64,6 @@ def reset_token():
     db.session.commit()
 
 
+# Get any non-expired token
 def get_token():
     return Token.query.filter_by(expired=False).first()
