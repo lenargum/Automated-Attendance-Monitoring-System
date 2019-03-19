@@ -1,21 +1,23 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <h3 align="center">Check your attendance</h3>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p align="center">
-            {{ form.group_name.label }}<br>
-            {{ form.group_name(size=32) }}
-        </p>
-        <p align="center">
-            {{ form.name.label }}<br>
-            {{ form.name(size=32) }}
-        </p>
-        <p align="center">
-            {{ form.last_name.label }}<br>
-            {{ form.last_name(size=32) }}
-        </p>
-        <p align="center">{{ form.submit() }}</p>
-    </form>
+    <h1 align="center">Check your attendance</h1>
+    <!--<form action="" method="post" novalidate>-->
+        <!--{{ form.hidden_tag() }}-->
+        <!--<p align="center">-->
+            <!--{{ form.group_name.label }}<br>-->
+            <!--{{ form.group_name(size=32) }}-->
+        <!--</p>-->
+        <!--<p align="center">-->
+            <!--{{ form.name.label }}<br>-->
+            <!--{{ form.name(size=32) }}-->
+        <!--</p>-->
+        <!--<p align="center">-->
+            <!--{{ form.last_name.label }}<br>-->
+            <!--{{ form.last_name(size=32) }}-->
+        <!--</p>-->
+        <!--<p align="center">{{ form.submit() }}</p>-->
+    <!--</form>-->
+    {{ wtf.quick_form(form) }}
 {% endblock %}
