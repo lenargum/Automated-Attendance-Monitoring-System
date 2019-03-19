@@ -1,16 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
       {% if title %}
-      <title>{{ title }}</title>
+      {{ title }}
       {% else %}
-      <title>Auto Attendance Monitoring System</title>
+      Auto Attendance Monitoring System
       {% endif %}
-    </head>
-    <body>
-        <div><a href="/index">Home</a></div>
-        <div><a href="/qrcode_generate">QRcode generate</a></div>
-        <hr>
-        {% block content %}{% endblock %}
-    </body>
-</html>
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index') }}">Attendance system</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('qr_code_generate') }}">QRcode generate</a></li>
+                </ul>
+                <!--<ul class="nav navbar-nav navbar-right">-->
+                    <!--<li><a href="{{ url_for('index') }}">Home</a></li>-->
+                <!--</ul>-->
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}
