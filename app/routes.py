@@ -2,7 +2,9 @@ from flask import render_template, redirect, url_for, request, jsonify
 from app import app
 from app.forms import TokenConfirmForm
 from app import db
+from app import qrcode
 from app import models
+import time
 
 
 @app.route("/")
@@ -14,20 +16,25 @@ def index():
 
 @app.route("/qrcode_generate")
 def qr_code_generate():
-    models.reset_token()
+    return render_template("qrcode_generate.html")
+
+
+@app.route("/qrcode_image")
+def qrcode_image():
     token = models.get_token()
     if not token:
-        return "No good tokens"
+        print("fail")
+        return jsonify({"status": "fail"})
     key = token.key
     hostname = request.headers["Host"]
-    return render_template("qrcode_generate.html",
-                           key=url_for("qr_code_token", token_key=key, _external=hostname))
+    qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=hostname))
+    return jsonify({"status": "ok", "image": qr_base64})
 
 
 @app.route("/qrcode_regen")
 def regen():
     models.reset_token()
-    return jsonify({"status": "ok"})
+    return "ok"
 
 
 @app.route("/add")

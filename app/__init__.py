@@ -11,7 +11,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
-QRcode(app)
+qrcode = QRcode(app)
 
 from app import routes
 from app import models
