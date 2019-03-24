@@ -28,3 +28,8 @@ $ flask run -h 0.0.0.0
 > flask db upgrade
 > flask run -h 0.0.0.0
 ```
+### How to test service
+After starting the server link to site is host's IP in network and port ```5000```
+__Example:__
+```10.240.17.219:5000```
+If you are trying to access to the site on the same machine as the server is running, do not use ```localhost``` or ```127.0.0.1```, because it will break URLs in QR-codes. Use your network address or ip instead.
