@@ -25,12 +25,47 @@ class Student(db.Model):
                 'date': self.date
                 }
 
+# User model
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    surname = db.Column(db.String())
+    email = db.Column(db.String(), unique=True)
+    isFaculty = db.Column(db.Boolean)
+    courses = db.relationship('Course', backref='user', lazy=True)
+    sessions = db.relationship('Session', backref='user', lazy=True)
+    sessionStudents = db.relationship('SessionStudent', backref='user', lazy=True)
+
+# Course model
+class Course(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    sessions = db.relationship('Session', backref='course', lazy=True)
+    facultyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+# Session model
+class Session(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    courseName = db.Column(db.String())
+    sessionStudents = db.relationship('SessionStudent', backref='session', lazy=True)
+    tokens = db.relationship('Token', backref='session', lazy=True)
+    facultyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    courseId = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+
+# SessionStudent model
+class SessionStudent(db.Model):
+    studentId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sessionId = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
+
 
 # Token model
 class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), unique=True)
     expired = db.Column(db.Boolean)
+    sessionId = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
 
 
 # Attendance model
