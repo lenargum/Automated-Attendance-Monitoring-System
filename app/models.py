@@ -19,6 +19,7 @@ class User(db.Model):
     name = db.Column(db.String())
     surname = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
+    password_hash = db.Column(db.String(128))
     is_faculty = db.Column(db.Boolean)
     sessions = db.relationship("Session", secondary=session_student)
     courses = db.relationship('Course', secondary=student_courses)
