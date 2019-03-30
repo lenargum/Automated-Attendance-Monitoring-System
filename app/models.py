@@ -1,63 +1,48 @@
 from uuid import uuid4
 from app import db
 
+session_student = db.Table("session_student",
+                           db.Column("session_id", db.Integer, db.ForeignKey("session.id")),
+                           db.Column("student_id", db.Integer, db.ForeignKey("user.id"))
+                           )
 
-class Student(db.Model):
-    __tablename__ = 'students'
-    id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String())
-    surname = db.Column(db.String())
-    date = db.Column(db.String())
-    
-    def __init__(self, name, surname, date):
-        self.name = name
-        self.surname = surname
-        self.date = date
-    
-    def __repr__(self):
-        return '%s %s attend lecture at %s' % (self.name, self.surname, self.date)
-    
-    def serialize(self):
-        return {
-                'id': self.id,
-                'name': self.name,
-                'surname': self.surname,
-                'date': self.date
-                }
+student_courses = db.Table("student_courses",
+                           db.Column("student_id", db.Integer, db.ForeignKey("user.id")),
+                           db.Column("course_id", db.Integer, db.ForeignKey("course.id"))
+                           )
+
 
 # User model
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     surname = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
     isFaculty = db.Column(db.Boolean)
-    courses = db.relationship('Course', backref='user', lazy=True)
-    sessions = db.relationship('Session', backref='user', lazy=True)
-    sessionStudents = db.relationship('SessionStudent', backref='user', lazy=True)
+    sessions = db.relationship("Session", secondary=session_student)
+    courses = db.relationship('Course', secondary=student_courses)
+
 
 # Course model
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
-    sessions = db.relationship('Session', backref='course', lazy=True)
     facultyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sessions = db.relationship('Session', backref='course', lazy=True)
+    students = db.relationship('User', secondary=student_courses)
+
 
 # Session model
 class Session(db.Model):
+    __tablename__ = "session"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
     courseName = db.Column(db.String())
-    sessionStudents = db.relationship('SessionStudent', backref='session', lazy=True)
     tokens = db.relationship('Token', backref='session', lazy=True)
     facultyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     courseId = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-
-# SessionStudent model
-class SessionStudent(db.Model):
-    studentId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    sessionId = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
+    students = db.relationship("User", secondary=session_student)
 
 
 # Token model
