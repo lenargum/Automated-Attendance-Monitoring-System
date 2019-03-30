@@ -39,7 +39,7 @@ class Session(db.Model):
     __tablename__ = "session"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
-    course_name = db.Column(db.String())
+    is_closed = db.Column(db.Boolean)
     tokens = db.relationship('Token', backref='session', lazy=True)
     faculty_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
