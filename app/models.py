@@ -19,7 +19,7 @@ class User(db.Model):
     name = db.Column(db.String())
     surname = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
-    isFaculty = db.Column(db.Boolean)
+    is_faculty = db.Column(db.Boolean)
     sessions = db.relationship("Session", secondary=session_student)
     courses = db.relationship('Course', secondary=student_courses)
 
@@ -28,7 +28,7 @@ class User(db.Model):
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
-    facultyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    faculty_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     sessions = db.relationship('Session', backref='course', lazy=True)
     students = db.relationship('User', secondary=student_courses)
 
@@ -38,10 +38,10 @@ class Session(db.Model):
     __tablename__ = "session"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
-    courseName = db.Column(db.String())
+    course_name = db.Column(db.String())
     tokens = db.relationship('Token', backref='session', lazy=True)
-    facultyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    courseId = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    faculty_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     students = db.relationship("User", secondary=session_student)
 
 
@@ -50,7 +50,7 @@ class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(), unique=True)
     expired = db.Column(db.Boolean)
-    sessionId = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
 
 
 # Attendance model
