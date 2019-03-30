@@ -53,24 +53,16 @@ class Token(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
 
 
-# Attendance model
-class Attendance(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    bs_group = db.Column(db.String())
-    name = db.Column(db.String())
-    surname = db.Column(db.String())
-
-
 # Get token by key
 def token_by_key(key):
     return Token.query.filter_by(key=key).first()
 
-
-# Add attendance entry
-def add_attendance(bs_group, name, surname):
-    att = Attendance(bs_group=bs_group, name=name, surname=surname)
-    db.session.add(att)
-    db.session.commit()
+#
+# # Add attendance entry
+# def add_attendance(bs_group, name, surname):
+#     att = Attendance(bs_group=bs_group, name=name, surname=surname)
+#     db.session.add(att)
+#     db.session.commit()
 
 
 # Expire all tokens and add new one
