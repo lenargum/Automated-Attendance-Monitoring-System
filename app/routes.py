@@ -4,7 +4,7 @@ from app.forms import TokenConfirmForm, SessionCreateForm
 from app import db
 from app import qrcode
 from app import models
-import time
+from datetime import datetime
 
 
 @app.route("/")
@@ -21,6 +21,15 @@ def session_create():
     courses = models.Course.query.all()
     form = SessionCreateForm()
     form.course.choices = [(c.id, c.name) for c in courses]
+    if form.validate_on_submit():
+        # TODO: use current authorized user
+        new_session = models.Session(date=datetime.now(),
+                                     faculty_id=1,
+                                     course_id=form.course.data)
+        db.session.add(new_session)
+        db.session.commit()
+        s_id = new_session.id
+        return redirect(url_for("session_manage", s_id=s_id))
     return render_template("session_create.html", form=form)
 
 
