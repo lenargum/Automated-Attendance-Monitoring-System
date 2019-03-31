@@ -1,13 +1,14 @@
 # Automated Attendance Monitoring System
 Automated Attendance Monitoring System for Innopolis University in context of [S19] Software Project course.
-### Developers:
+### Contributors:
 * [Lenar Gumerov](mailto:l.gumerov@innopolis.ru "Send mail")
 * [Egor Polivtsev](mailto:e.polivtsev@innopolis.ru "Send mail")
 * [Victoria Zubrinkina](mailto:v.zubrinkina@innopolis.ru "Send mail")
 * [Georgii Khorushevskii](mailto:g.horuzhevskiy@innopolis.ru "Send mail")
 * [Mikhail Bobrov](mailto:m.bobrov@innopolis.ru "Send mail")
 ------
-### How to start server
+## Getting Started
+### Starting server
 #### Execute commands:
 
 *Unix Bash (Linux, Mac, etc.)*:
@@ -28,8 +29,8 @@ $ flask run -h 0.0.0.0
 > flask db upgrade
 > flask run -h 0.0.0.0
 ```
-### How to test service
-After starting the server link to site is host's IP in network and port ```5000```
+### Testing service
+After starting the server link to site is host's IPv4 in network and port ```5000```
 
 __Example:__
 ```
