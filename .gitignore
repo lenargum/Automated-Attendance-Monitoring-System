@@ -108,3 +108,6 @@ venv.bak/
 
 # local db
 app.db
+
+# migrations
+migrations/
