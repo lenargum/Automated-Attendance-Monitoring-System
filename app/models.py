@@ -1,5 +1,11 @@
 from uuid import uuid4
 from app import db
+from flask_login import UserMixin
+from app import login
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 session_student = db.Table("session_student",
                            db.Column("session_id", db.Integer, db.ForeignKey("session.id")),
@@ -13,7 +19,7 @@ student_courses = db.Table("student_courses",
 
 
 # User model
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
@@ -23,6 +29,12 @@ class User(db.Model):
     is_faculty = db.Column(db.Boolean)
     sessions = db.relationship("Session", secondary=session_student)
     courses = db.relationship('Course', secondary=student_courses)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 # Course model
