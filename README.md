@@ -1,5 +1,6 @@
 # Automated Attendance Monitoring System
 Automated Attendance Monitoring System for Innopolis University in context of [S19] Software Project course.
+
 The system **allows to faculty** generate unique QR-code and **allows to students** follow the link inside QR-code and mark their attendance.
 ### Contributors:
 * [Lenar Gumerov](mailto:l.gumerov@innopolis.ru "Send mail")
