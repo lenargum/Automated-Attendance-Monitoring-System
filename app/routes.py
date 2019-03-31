@@ -14,11 +14,26 @@ def index():
     return render_template("index.html", attendance=attendance)
 
 
+# TODO: only accessible for faculty
+@app.route("/session_create")
+def session_create():
+    pass
+
+
+# TODO: only accessible for faculty
+@app.route("/session/<s_id>")
+def session_manage(s_id):
+    session = models.Session.query.filter_by(id=s_id).first_or_404()
+    return render_template("session.html", session=session)
+
+
+# TODO: only accessible for faculty
 @app.route("/qrcode_generate")
 def qr_code_generate():
     return render_template("qrcode_generate.html")
 
 
+# TODO: only accessible for faculty
 @app.route("/qrcode_image")
 def qrcode_image():
     token = models.get_token()
@@ -31,6 +46,7 @@ def qrcode_image():
     return jsonify({"status": "ok", "image": qr_base64})
 
 
+# TODO: only accessible for faculty
 @app.route("/qrcode_regen")
 def regen():
     models.reset_token()
@@ -62,6 +78,7 @@ def show_db():
     return render_template('view.html', students=[st.serialize() for st in students])
 
 
+# TODO: only accessible for logged in users, otherwise show warning
 # Allow enter and submit attendance data if token is correct
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
 def qr_code_token(token_key):
