@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_qrcode import QRcode
+from flask_login import LoginManager
 
 app = Flask(__name__)
 
@@ -12,6 +13,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 qrcode = QRcode(app)
+login = LoginManager(app)
 
 from app import routes
 from app import models
