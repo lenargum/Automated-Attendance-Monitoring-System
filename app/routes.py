@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, request, jsonify
 from app import app
-from app.forms import TokenConfirmForm
+from app.forms import TokenConfirmForm, SessionCreateForm
 from app import db
 from app import qrcode
 from app import models
@@ -15,9 +15,13 @@ def index():
 
 
 # TODO: only accessible for faculty
-@app.route("/session_create")
+@app.route("/session/create", methods=['GET', 'POST'])
 def session_create():
-    pass
+    # TODO: take courses relevant to current faculty user
+    courses = models.Course.query.all()
+    form = SessionCreateForm()
+    form.course.choices = [(c.id, c.name) for c in courses]
+    return render_template("session_create.html", form=form)
 
 
 # TODO: only accessible for faculty
