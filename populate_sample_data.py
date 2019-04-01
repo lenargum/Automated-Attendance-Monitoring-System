@@ -17,8 +17,10 @@ courses = [
 
 print("Adding Main Professor")
 u = models.User(name="Prof", surname="Fessor", email="prof@mail", is_faculty=True)
+u.set_password(input("Enter Main Prof password: "))
 db.session.add(u)
 db.session.commit()
+print("Main Prof Added")
 
 
 print("Adding session types")
