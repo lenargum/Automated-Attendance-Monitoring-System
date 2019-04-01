@@ -141,8 +141,7 @@ def qrcode_image():
     if not token:
         return jsonify({"status": "fail"})
     key = token.key
-    hostname = request.headers["Host"]
-    qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=hostname))
+    qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=True))
     return jsonify({"status": "ok", "image": qr_base64})
 
 
