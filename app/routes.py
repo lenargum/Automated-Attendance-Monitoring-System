@@ -111,12 +111,6 @@ def regen():
     return "ok"
 
 
-# TODO: only accessible for faculty
-@app.route("/qrcode_generate")
-def qr_code_generate():
-    return render_template("qrcode_generate.html")
-
-
 # Allow enter and submit attendance data if token is correct
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
 def qr_code_token(token_key):
