@@ -1,7 +1,6 @@
 from flask import render_template, redirect, url_for, request, jsonify
 from app import app
 from app.forms import TokenConfirmForm, LoginForm
-from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
@@ -80,7 +79,8 @@ def logout():
 @app.route('/profile/<email>')
 @login_required
 def profile(email):
-    user = User.query.filter_by(email=email).first_or_404()
+    user = models.User.query.filter_by(email=email).first_or_404()
+    print(user.id)
     return render_template('profile.html', user=user)
 
 

@@ -3,7 +3,7 @@ from app import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import login
-
+from sqlalchemy import *
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -17,6 +17,11 @@ student_courses = db.Table("student_courses",
                            db.Column("student_id", db.Integer, db.ForeignKey("user.id")),
                            db.Column("course_id", db.Integer, db.ForeignKey("course.id"))
                            )
+#testing
+def get_sessions(id):
+    sessions = select([session_student]).where(session_student.c.student_id == id)
+    return sessions
+
 
 
 # User model
