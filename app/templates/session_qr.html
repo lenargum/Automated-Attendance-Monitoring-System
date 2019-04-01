@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+    <h1>{{ session.course.name }} ({{ session.type.name }})</h1>
     <button id="regen" type="button" class="btn btn-primary center-block">Re-generate QRcode</button>
     <img src="" id="qr_image" class="center-block" width=512 alt="QRcode">
     <h1><span id="qr_label" class="label label-default center-block hidden">QRcode unavailable</span></h1>

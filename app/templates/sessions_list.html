@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+    <h1>Sessions created by {{ current_user.name }} {{ current_user.surname }}</h1>
     <table class="table table-striped">
         <caption><b>Sessions</b></caption>
         <tr>

@@ -41,7 +41,7 @@ def session_create():
     return render_template("session_create.html", form=form)
 
 
-@app.route("/sessions")
+@app.route("/my_sessions")
 @login_required
 def sessions_list():
     if not current_user.is_faculty:
