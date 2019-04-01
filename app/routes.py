@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request, jsonify
+from flask import render_template, redirect, url_for, request, jsonify, flash
 from app import app
 from app.forms import TokenConfirmForm, SessionCreateForm, LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -14,9 +14,12 @@ def index():
     return render_template("index.html")
 
 
-# TODO: only accessible for faculty
 @app.route("/session/create", methods=['GET', 'POST'])
+@login_required
 def session_create():
+    if not current_user.is_faculty:
+        flash("Only faculty can create new attendance session")
+        return redirect("index")
     # TODO: take courses relevant to current faculty user
     courses = models.Course.query.all()
     s_types = models.SessionType.query.all()
@@ -26,7 +29,8 @@ def session_create():
     if form.validate_on_submit():
         # TODO: use current authorized user
         new_session = models.Session(date=datetime.now(),
-                                     faculty_id=1,
+                                     faculty_id=current_user.id,
+                                     is_closed=False,
                                      type_id=form.s_type.data,
                                      course_id=form.course.data)
         db.session.add(new_session)
@@ -38,7 +42,11 @@ def session_create():
 
 # TODO: only accessible for faculty
 @app.route("/session/<s_id>")
+@login_required
 def session_manage(s_id):
+    if not current_user.is_faculty:
+        flash("Only faculty can manage session")
+        return redirect("index")
     session = models.Session.query.filter_by(id=s_id).first_or_404()
     return render_template("session.html", session=session)
 
