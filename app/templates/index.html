@@ -1,5 +1,23 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Home page</h1>
+    <h1>Automated Attendance Monitoring System</h1>
+    <hr>
+    <div class="container">
+    <blockquote>
+        <p>Automated Attendance Monitoring System for Innopolis University in context of <mark>[S19] Software Project</mark> course. The system allows to faculty generate unique <strong>QR-code</strong> and allows to students follow the link inside <strong>QR-code</strong> and mark their attendance.</p>
+    </blockquote>
+    <dl>
+        <dt>Team:</dt>
+        <dd>- <a href="mailto:l.gumerov@innopolis.ru">Lenar Gumerov</a></dd>
+        <dd>- <a href="mailto:e.polivtsev@innopolis.ru">Egor Polivtsev</a></dd>
+        <dd>- <a href="mailto:v.zubrinkina@innopolis.ru">Victoria Zubrinkina</a></dd>
+        <dd>- <a href="mailto:g.horuzhevskiy@innopolis.ru">Georgii Khorushevskii</a></dd>
+        <dd>- <a href="mailto:m.bobrov@innopolis.ru">Mikhail Bobrov</a></dd>
+    </dl>
+    <img>
+        <img src="{{ url_for('static', filename='GitHubQR.png') }}" class="img-rounded" alt="gitqr">
+        <dd><a class="btn btn-default btn-sm" href="https://github.com/lenargum/Automated-Attendance-Monitoring-System" role="button">Github</a></dd>
+    </dl>
+    </div>
 {% endblock %}
