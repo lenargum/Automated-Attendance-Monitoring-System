@@ -69,15 +69,21 @@ def session_qr(s_id):
     return render_template("session_qr.html", session=session)
 
 
+# API calls (to call from client using js and jQuery)
+
 # TODO: only accessible for faculty
 @login_required
-@app.route("/api/qrcode_image")
+@app.route("/api/qr_image")
 def qrcode_image():
-    print(request.args)
-    session_id = 1
+    session_id = request.args.get("session_id", None)
+    if not session_id:
+        return jsonify({"status": "fail"})
+    try:
+        session_id = int(session_id)
+    except ValueError:
+        return jsonify({"status": "fail"})
     token = models.get_token(session_id)
     if not token:
-        print("fail")
         return jsonify({"status": "fail"})
     key = token.key
     hostname = request.headers["Host"]
@@ -86,29 +92,23 @@ def qrcode_image():
 
 
 # TODO: only accessible for faculty
-@app.route("/qrcode_generate")
-def qr_code_generate():
-    return render_template("qrcode_generate.html")
-
-
-# # TODO: only accessible for faculty
-# @app.route("/qrcode_image")
-# def qrcode_image():
-#     token = models.get_token()
-#     if not token:
-#         print("fail")
-#         return jsonify({"status": "fail"})
-#     key = token.key
-#     hostname = request.headers["Host"]
-#     qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=hostname))
-#     return jsonify({"status": "ok", "image": qr_base64})
+@app.route("/api/qr_regen")
+def regen():
+    session_id = request.args.get("session_id", None)
+    if not session_id:
+        return jsonify({"status": "fail"})
+    try:
+        session_id = int(session_id)
+    except ValueError:
+        return jsonify({"status": "fail"})
+    models.reset_token(session_id)
+    return "ok"
 
 
 # TODO: only accessible for faculty
-@app.route("/qrcode_regen")
-def regen():
-    models.reset_token()
-    return "ok"
+@app.route("/qrcode_generate")
+def qr_code_generate():
+    return render_template("qrcode_generate.html")
 
 
 # Allow enter and submit attendance data if token is correct
