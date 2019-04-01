@@ -96,6 +96,9 @@ def session_qr(s_id):
 @login_required
 def qr_code_token(token_key):
     token: models.Token = models.token_by_key(token_key)
+    if token.expired:
+        flash("Sorry, this token is no longer available", "warning")
+        return redirect("/index")
     session: models.Session = token.session
     session.students.append(current_user)
     db.session.commit()
