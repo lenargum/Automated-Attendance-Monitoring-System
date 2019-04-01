@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ session.course.name }} ({{ session.type.name }})</h1>
+    <button id="regen" type="button" class="btn btn-primary center-block">Re-generate QRcode</button>
+    <img src="" id="qr_image" class="center-block" width=512 alt="QRcode">
+    <h1><span id="qr_label" class="label label-default center-block hidden">QRcode unavailable</span></h1>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+    <script>
+        let session_id = {{ session.id }};
+        function update_image() {
+            let $qr_image = $("#qr_image");
+            let $qr_label = $("#qr_label");
+            $.get("/api/qr_image", {"session_id": session_id}, function( data ) {
+                if (data.status === "ok") {
+                    $qr_label.addClass("hidden");
+                    $qr_image.removeClass("hidden");
+                    $qr_image.attr("src", data.image);
+                } else {
+                    $qr_label.removeClass("hidden");
+                    $qr_image.addClass("hidden");
+                }
+            }, "json");
+        }
+        update_image();
+        $("#regen").on("click", function () {
+            $.get("/api/qr_regen", {"session_id": session_id}).done(function () {
+                update_image();
+            });
+        })
+    </script>
+{% endblock %}

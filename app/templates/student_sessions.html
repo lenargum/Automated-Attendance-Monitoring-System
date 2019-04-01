@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>Sessions attended by {{ current_user.name }} {{ current_user.surname }}</h1>
+    <table class="table table-striped">
+        <caption><b>Sessions</b></caption>
+        <tr>
+        <th>Course</th>
+        <th>Date</th>
+        <th>Finished</th>
+        </tr>
+        {% for session in user.sessions %}
+        <tr>
+            <td>{{session.course.name}}</td>
+            <td>{{session.date}}</td>
+            <td>{{session.is_closed}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -2,6 +2,6 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <h1 align="center">Check your attendance</h1>
+    <h1>Create new attendance session:</h1>
     {{ wtf.quick_form(form, button_map={"submit": "success"}) }}
 {% endblock %}

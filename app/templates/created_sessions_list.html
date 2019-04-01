@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>Sessions created by {{ current_user.name }} {{ current_user.surname }}</h1>
+    <table class="table table-striped">
+        <caption><b>Sessions</b></caption>
+        <tr>
+        <th>Course</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Finished</th>
+        <th>Manage</th>
+        </tr>
+        {% for session in current_user.created_sessions %}
+            {%  if session.is_closed %}
+            <tr class="success">
+            {% else %}
+            <tr>
+            {% endif %}
+                <td>{{session.course.name}}</td>
+                <td>{{session.date.strftime("%d.%m.%Y")}}</td>
+                <td>{{session.date.strftime("%H:%M")}}</td>
+                <td><b>{{"Yes" if session.is_closed else "No"}}</b></td>
+                <td><a class="btn btn-default btn-sm" href="{{ url_for("session_manage", s_id=session.id) }}" role="button">Manage</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
