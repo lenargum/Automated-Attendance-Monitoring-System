@@ -7,14 +7,20 @@
         <tr>
         <th>Course</th>
         <th>Date</th>
+        <th>Time</th>
         <th>Finished</th>
         </tr>
         {% for session in current_user.sessions %}
-        <tr>
-            <td>{{session.course.name}}</td>
-            <td>{{session.date}}</td>
-            <td>{{session.is_closed}}</td>
-        </tr>
+            {%  if session.is_closed %}
+            <tr class="success">
+            {% else %}
+            <tr>
+            {% endif %}
+                <td>{{session.course.name}}</td>
+                <td>{{session.date.strftime("%d.%m.%Y")}}</td>
+                <td>{{session.date.strftime("%H:%M:%S")}}</td>
+                <td><b>{{"Yes" if session.is_closed else "No"}}</b></td>
+            </tr>
         {% endfor %}
     </table>
 {% endblock %}
