@@ -82,9 +82,10 @@ def session_qr(s_id):
     hostname = request.headers["Host"]
     # flash(app.config["SERVER_URL"])
     if hostname.startswith("127.0.0.1"):
-        message = "Accessing from localhost. <b>Please use global ip or address instead</b>"
-        # message = "Accessing from localhost. <a href={}>Please use global ip or address instead</a>"
-        # message = message.format(url_for("session_qr", s_id=s_id, _external=True))
+        port = hostname.split(":")[1]
+        message = "Accessing from localhost. <a href=http://{}><b>Please use global ip or address instead</b></a>"
+        message = message.format(app.config["GLOBAL_IP"]+":"+port+url_for("session_qr", s_id=s_id))
+        print(message)
         flash(Markup(message), "danger")
         # return redirect(url_for("session_qr", s_id=s_id, _external=app.config["SERVER_URL"]+":"+port))
     session = models.Session.query.filter_by(id=s_id).first_or_404()

@@ -4,7 +4,7 @@ from app import models
 print("Users filename: ")
 filename = input()
 for person in open(filename, "r").readlines():
-    data = person.split(" ")
+    data = person.strip().split(" ")
     u = models.User(name=data[0], surname=data[1], email=data[2], is_faculty=False)
     u.set_password("test")
     db.session.add(u)
