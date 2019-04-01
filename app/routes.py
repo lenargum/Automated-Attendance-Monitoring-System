@@ -19,12 +19,15 @@ def index():
 def session_create():
     # TODO: take courses relevant to current faculty user
     courses = models.Course.query.all()
+    s_types = models.SessionType.query.all()
     form = SessionCreateForm()
     form.course.choices = [(c.id, c.name) for c in courses]
+    form.s_type.choices = [(st.id, st.name) for st in s_types]
     if form.validate_on_submit():
         # TODO: use current authorized user
         new_session = models.Session(date=datetime.now(),
                                      faculty_id=1,
+                                     type_id=form.s_type.data,
                                      course_id=form.course.data)
         db.session.add(new_session)
         db.session.commit()

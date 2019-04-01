@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, DateTimeField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, RadioField
 from wtforms.validators import DataRequired
 
 
@@ -19,5 +19,5 @@ class TokenConfirmForm(FlaskForm):
 
 class SessionCreateForm(FlaskForm):
     course = SelectField("Course", coerce=int, validators=[DataRequired()])
-    # date = DateTimeField("Session date")
+    s_type = RadioField("Course", coerce=int, validators=[DataRequired()])
     submit = SubmitField("Create")

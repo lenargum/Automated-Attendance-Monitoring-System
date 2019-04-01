@@ -2,6 +2,7 @@
 
 {% block app_content %}
     <h1>{{ session.course.name }}</h1>
+    <h2>{{ session.type.name }}</h2>
     <h2>started at {{ session.date.strftime("%d.%m.%Y %H:%M:%S") }}</h2>
     <table class="table table-striped">
         <caption><b>Attended students</b></caption>
