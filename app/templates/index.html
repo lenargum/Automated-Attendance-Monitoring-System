@@ -2,15 +2,4 @@
 
 {% block app_content %}
     <h1>Home page</h1>
-  <table align="center" border="1">
-   <caption><b>Attendance</b></caption>
-   <tr>
-    <th>BS Group</th>
-    <th>Name</th>
-    <th>Surname</th>
-   </tr>
-  {% for at in attendance %}
-   <tr><td>{{at.bs_group}}</td><td>{{at.name}}</td><td>{{at.surname}}</td></tr>
-  {% endfor %}
-  </table>
 {% endblock %}
