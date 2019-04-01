@@ -101,5 +101,5 @@ def reset_token():
 
 
 # Get any non-expired token
-def get_token():
-    return Token.query.filter_by(expired=False).first()
+def get_token(session_id):
+    return Token.query.filter_by(expired=False, session_id=session_id).first()

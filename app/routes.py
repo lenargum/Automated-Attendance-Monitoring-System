@@ -14,6 +14,7 @@ def index():
     return render_template("index.html")
 
 
+# For faculty: create new session and go to managing page
 @app.route("/session/create", methods=['GET', 'POST'])
 @login_required
 def session_create():
@@ -58,16 +59,23 @@ def session_manage(s_id):
     return render_template("session.html", session=session)
 
 
-# TODO: only accessible for faculty
-@app.route("/qrcode_generate")
-def qr_code_generate():
-    return render_template("qrcode_generate.html")
+@app.route("/session_qr/<s_id>")
+@login_required
+def session_qr(s_id):
+    if not current_user.is_faculty:
+        flash("Only faculty can show QRs")
+        return redirect("index")
+    session = models.Session.query.filter_by(id=s_id).first_or_404()
+    return render_template("session_qr.html", session=session)
 
 
 # TODO: only accessible for faculty
-@app.route("/qrcode_image")
+@login_required
+@app.route("/api/qrcode_image")
 def qrcode_image():
-    token = models.get_token()
+    print(request.args)
+    session_id = 1
+    token = models.get_token(session_id)
     if not token:
         print("fail")
         return jsonify({"status": "fail"})
@@ -75,6 +83,25 @@ def qrcode_image():
     hostname = request.headers["Host"]
     qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=hostname))
     return jsonify({"status": "ok", "image": qr_base64})
+
+
+# TODO: only accessible for faculty
+@app.route("/qrcode_generate")
+def qr_code_generate():
+    return render_template("qrcode_generate.html")
+
+
+# # TODO: only accessible for faculty
+# @app.route("/qrcode_image")
+# def qrcode_image():
+#     token = models.get_token()
+#     if not token:
+#         print("fail")
+#         return jsonify({"status": "fail"})
+#     key = token.key
+#     hostname = request.headers["Host"]
+#     qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=hostname))
+#     return jsonify({"status": "ok", "image": qr_base64})
 
 
 # TODO: only accessible for faculty
