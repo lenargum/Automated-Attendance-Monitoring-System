@@ -95,12 +95,12 @@ def token_by_key(key):
 
 
 # Expire all tokens and add new one
-def reset_token():
-    fresh_tokens = Token.query.filter_by(expired=False).paginate().items
+def reset_token(session_id):
+    fresh_tokens = Token.query.filter_by(expired=False, session_id=session_id).paginate().items
     for token in fresh_tokens:
         token.expired = True
     db.session.commit()
-    new_token = Token(key=str(uuid4()), expired=False)
+    new_token = Token(key=str(uuid4()), expired=False, session_id=session_id)
     db.session.add(new_token)
     db.session.commit()
 

@@ -4,6 +4,8 @@
     <h1>{{ session.course.name }}</h1>
     <h2>{{ session.type.name }}</h2>
     <h2>started at {{ session.date.strftime("%d.%m.%Y %H:%M:%S") }}</h2>
+    <a type="button" class="btn btn-primary btn-lg active" href="{{ url_for("session_qr", s_id=session.id) }}">Qr-code generation</a>
+    <a type="button" class="btn btn-danger btn-lg active">Close</a>
     <table class="table table-striped">
         <caption><b>Attended students</b></caption>
         <tr>
