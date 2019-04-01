@@ -25,9 +25,10 @@
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav">
                     {% if not current_user.is_anonymus and current_user.is_faculty %}
-                    <li><a href="{{ url_for('session_create') }}">New session</a></li>
-                    <li><a href="{{ url_for('sessions_list') }}">Created sessions</a></li>
+                        <li><a href="{{ url_for('session_create') }}">New session</a></li>
+                        <li><a href="{{ url_for('created_sessions_list') }}">Created sessions</a></li>
                     {% endif %}
+                    <li><a href="{{ url_for('attended_sessions_list') }}">Attended sessions</a></li>
 {#                    <li><a href="{{ url_for('qr_code_generate') }}">QRcode generate</a></li>#}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

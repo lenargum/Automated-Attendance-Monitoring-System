@@ -9,7 +9,7 @@
         <th>Date</th>
         <th>Finished</th>
         </tr>
-        {% for session in user.sessions %}
+        {% for session in current_user.sessions %}
         <tr>
             <td>{{session.course.name}}</td>
             <td>{{session.date}}</td>

@@ -43,14 +43,20 @@ def session_create():
 
 @app.route("/created_sessions")
 @login_required
-def sessions_list():
+def created_sessions_list():
     if not current_user.is_faculty:
         flash("Only faculty can manage session")
         return redirect("index")
     return render_template("created_sessions_list.html")
 
 
-@app.route("/sessions/<st_id>")
+@app.route("/attended_sessions")
+@login_required
+def attended_sessions_list():
+    return render_template("attended_sessions_list.html")
+
+
+@app.route("/student_sessions/<st_id>")
 @login_required
 def student_sessions(st_id):
     user = models.User.query.filter_by(id=st_id).first_or_404()
