@@ -1,11 +1,11 @@
-from flask import render_template, redirect, url_for, request, jsonify
+from flask import render_template, redirect, url_for, request, jsonify, flash
 from app import app
-from app.forms import TokenConfirmForm, LoginForm
-from app.models import User
+from app.forms import TokenConfirmForm, SessionCreateForm, LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
 from app import models
+from datetime import datetime
 
 
 @app.route("/")
@@ -14,11 +14,50 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/session/create", methods=['GET', 'POST'])
+@login_required
+def session_create():
+    if not current_user.is_faculty:
+        flash("Only faculty can create new attendance session")
+        return redirect("index")
+    # TODO: take courses relevant to current faculty user
+    courses = models.Course.query.all()
+    s_types = models.SessionType.query.all()
+    form = SessionCreateForm()
+    form.course.choices = [(c.id, c.name) for c in courses]
+    form.s_type.choices = [(st.id, st.name) for st in s_types]
+    if form.validate_on_submit():
+        # TODO: use current authorized user
+        new_session = models.Session(date=datetime.now(),
+                                     faculty_id=current_user.id,
+                                     is_closed=False,
+                                     type_id=form.s_type.data,
+                                     course_id=form.course.data)
+        db.session.add(new_session)
+        db.session.commit()
+        s_id = new_session.id
+        return redirect(url_for("session_manage", s_id=s_id))
+    return render_template("session_create.html", form=form)
+
+
+# TODO: only accessible for faculty
+@app.route("/session/<s_id>")
+@login_required
+def session_manage(s_id):
+    if not current_user.is_faculty:
+        flash("Only faculty can manage session")
+        return redirect("index")
+    session = models.Session.query.filter_by(id=s_id).first_or_404()
+    return render_template("session.html", session=session)
+
+
+# TODO: only accessible for faculty
 @app.route("/qrcode_generate")
 def qr_code_generate():
     return render_template("qrcode_generate.html")
 
 
+# TODO: only accessible for faculty
 @app.route("/qrcode_image")
 def qrcode_image():
     token = models.get_token()
@@ -31,6 +70,7 @@ def qrcode_image():
     return jsonify({"status": "ok", "image": qr_base64})
 
 
+# TODO: only accessible for faculty
 @app.route("/qrcode_regen")
 def regen():
     models.reset_token()
@@ -64,7 +104,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = models.User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
@@ -77,10 +117,11 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
 @app.route('/profile/<email>')
 @login_required
 def profile(email):
-    user = User.query.filter_by(email=email).first_or_404()
+    user = models.User.query.filter_by(email=email).first_or_404()
     return render_template('profile.html', user=user)
 
 

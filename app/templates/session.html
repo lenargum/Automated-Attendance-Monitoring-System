@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ session.course.name }}</h1>
+    <h2>{{ session.type.name }}</h2>
+    <h2>started at {{ session.date.strftime("%d.%m.%Y %H:%M:%S") }}</h2>
+    <table class="table table-striped">
+        <caption><b>Attended students</b></caption>
+        <tr>
+        <th>Name</th>
+        <th>Surname</th>
+        </tr>
+        {% for student in session.students %}
+        <tr><td>{{student.name}}</td><td>{{student.surname}}</td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}
