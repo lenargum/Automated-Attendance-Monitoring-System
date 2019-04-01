@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <h1>Hello, {{user.email}}</h1>
-    <hr>
+{% block app_content %}
+    <caption><b>User information</b></caption>
+    <table class="table table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Surname</th>
+        <th>Role</th>
+        <th>Email</th>
+    </tr>
+    <tr>
+        <td>{{user.name}}</td>
+        <td>{{user.surname}}</td>
+        {% if user.is_faculty %}
+            <td>Faculty</td>
+        {% else %}
+            <td>Student</td>
+        {% endif %}
+        <td>{{user.email}}</td>
+    </tr>
+    </table>
 {% endblock %}
