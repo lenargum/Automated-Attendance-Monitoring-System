@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, request, jsonify, flash
 from app import app
-from app.forms import TokenConfirmForm, SessionCreateForm, LoginForm
+from app.forms import SessionCreateForm, LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
@@ -47,6 +47,7 @@ def sessions_list():
         flash("Only faculty can manage session")
         return redirect("index")
     return render_template("sessions_list.html")
+
 
 @app.route("/sessions/<st_id>")
 @login_required
@@ -148,5 +149,3 @@ def regen():
         return jsonify({"status": "fail"})
     models.reset_token(session_id)
     return "ok"
-
-

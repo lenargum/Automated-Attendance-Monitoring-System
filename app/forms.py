@@ -10,13 +10,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Sign In")
 
 
-class TokenConfirmForm(FlaskForm):
-    group_name = StringField("BS Group name", validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    last_name = StringField("Last name", validators=[DataRequired()])
-    submit = SubmitField("Check")
-
-
 class SessionCreateForm(FlaskForm):
     course = SelectField("Course", coerce=int, validators=[DataRequired()])
     s_type = RadioField("Course", coerce=int, validators=[DataRequired()])
