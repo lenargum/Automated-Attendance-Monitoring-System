@@ -69,6 +69,45 @@ def session_qr(s_id):
     return render_template("session_qr.html", session=session)
 
 
+# Allow enter and submit attendance data if token is correct
+@app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
+@login_required
+def qr_code_token(token_key):
+    token: models.Token = models.token_by_key(token_key)
+    session: models.Session = token.session
+    session.students.append(current_user)
+    db.session.commit()
+    flash("Success! You attendance for {} was recorded".format(session.course.name))
+    return redirect("/index")
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = models.User.query.filter_by(email=form.email.data).first()
+        if user is None or not user.check_password(form.password.data):
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('index'))
+    return render_template('login.html', title='Sign In', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+@app.route('/profile/<email>')
+@login_required
+def profile(email):
+    user = models.User.query.filter_by(email=email).first_or_404()
+    return render_template('profile.html', user=user)
+
+
 # API calls (to call from client using js and jQuery)
 
 # TODO: only accessible for faculty
@@ -103,53 +142,5 @@ def regen():
         return jsonify({"status": "fail"})
     models.reset_token(session_id)
     return "ok"
-
-
-# Allow enter and submit attendance data if token is correct
-@app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
-def qr_code_token(token_key):
-    token: models.Token = models.token_by_key(token_key)
-    form = TokenConfirmForm()
-    if not token:
-        return render_template("qrcode_token_failed.html",
-                               title="Token error",
-                               error="This token does not exists")
-    if token.expired:
-        return render_template("qrcode_token_failed.html",
-                               title="Token error",
-                               error="this token has expired")
-    if form.validate_on_submit():
-        models.add_attendance(bs_group=form.group_name.data,
-                              name=form.name.data,
-                              surname=form.last_name.data)
-        return redirect("/index")
-    return render_template("qrcode_token.html", token=token, form=form)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = models.User.query.filter_by(email=form.email.data).first()
-        if user is None or not user.check_password(form.password.data):
-            return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
-    return render_template('login.html', title='Sign In', form=form)
-
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
-
-@app.route('/profile/<email>')
-@login_required
-def profile(email):
-    user = models.User.query.filter_by(email=email).first_or_404()
-    return render_template('profile.html', user=user)
 
 
