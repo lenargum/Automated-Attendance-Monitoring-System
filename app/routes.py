@@ -48,6 +48,12 @@ def sessions_list():
         return redirect("index")
     return render_template("sessions_list.html")
 
+@app.route("/sessions/<st_id>")
+@login_required
+def student_sessions(st_id):
+    user = models.User.query.filter_by(id=st_id).first_or_404()
+    return render_template("student_sessions.html", user=user)
+
 
 @app.route("/session/<s_id>")
 @login_required
