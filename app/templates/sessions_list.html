@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <table class="table table-striped">
+        <caption><b>Sessions</b></caption>
+        <tr>
+        <th>Course</th>
+        <th>Date</th>
+        <th>Finished</th>
+        <th>Manage</th>
+        </tr>
+        {% for session in current_user.created_sessions %}
+        <tr>
+            <td>{{session.course.name}}</td>
+            <td>{{session.date}}</td>
+            <td>{{session.is_closed}}</td>
+            <td><a class="btn btn-default btn-sm" href="{{ url_for("session_manage", s_id=session.id) }}" role="button">Manage</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

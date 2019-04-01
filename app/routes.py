@@ -27,7 +27,6 @@ def session_create():
     form.course.choices = [(c.id, c.name) for c in courses]
     form.s_type.choices = [(st.id, st.name) for st in s_types]
     if form.validate_on_submit():
-        # TODO: use current authorized user
         new_session = models.Session(date=datetime.now(),
                                      faculty_id=current_user.id,
                                      is_closed=False,
@@ -40,7 +39,15 @@ def session_create():
     return render_template("session_create.html", form=form)
 
 
-# TODO: only accessible for faculty
+@app.route("/sessions")
+@login_required
+def sessions_list():
+    if not current_user.is_faculty:
+        flash("Only faculty can manage session")
+        return redirect("index")
+    return render_template("sessions_list.html")
+
+
 @app.route("/session/<s_id>")
 @login_required
 def session_manage(s_id):

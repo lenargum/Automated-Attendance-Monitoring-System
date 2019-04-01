@@ -29,6 +29,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     is_faculty = db.Column(db.Boolean)
     sessions = db.relationship("Session", secondary=session_student)
+    created_sessions = db.relationship('Session', backref='creator', lazy=True)
     courses = db.relationship('Course', secondary=student_courses)
 
     def set_password(self, password):
