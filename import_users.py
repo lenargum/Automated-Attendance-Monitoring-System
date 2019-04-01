@@ -4,8 +4,6 @@ import sys
 from app import db
 from app import models
 
-print(sys.argv)
-
 if len(sys.argv) != 2:
     print("Usage: {} INPUT".format(sys.argv[0]))
     sys.exit(1)
