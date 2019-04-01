@@ -1,4 +1,5 @@
 from flask import render_template, redirect, url_for, request, jsonify, flash
+from markupsafe import Markup
 from app import app
 from app.forms import SessionCreateForm, LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -72,6 +73,14 @@ def session_qr(s_id):
     if not current_user.is_faculty:
         flash("Only faculty can show QRs")
         return redirect("index")
+    hostname = request.headers["Host"]
+    # flash(app.config["SERVER_URL"])
+    if hostname.startswith("127.0.0.1"):
+        message = "Accessing from localhost. <b>Please use global ip or address instead</b>"
+        # message = "Accessing from localhost. <a href={}>Please use global ip or address instead</a>"
+        # message = message.format(url_for("session_qr", s_id=s_id, _external=True))
+        flash(Markup(message), "danger")
+        # return redirect(url_for("session_qr", s_id=s_id, _external=app.config["SERVER_URL"]+":"+port))
     session = models.Session.query.filter_by(id=s_id).first_or_404()
     return render_template("session_qr.html", session=session)
 
