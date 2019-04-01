@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, jsonify
 from app import app
 from app.forms import TokenConfirmForm, LoginForm
 from app.models import User
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
 from app import models
@@ -61,7 +61,7 @@ def qr_code_token(token_key):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('data'))
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -76,5 +76,11 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route('/profile/<email>')
+@login_required
+def profile(email):
+    user = User.query.filter_by(email=email).first_or_404()
+    return render_template('profile.html', user=user)
 
 
