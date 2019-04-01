@@ -41,13 +41,13 @@ def session_create():
     return render_template("session_create.html", form=form)
 
 
-@app.route("/my_sessions")
+@app.route("/created_sessions")
 @login_required
 def sessions_list():
     if not current_user.is_faculty:
         flash("Only faculty can manage session")
         return redirect("index")
-    return render_template("sessions_list.html")
+    return render_template("created_sessions_list.html")
 
 
 @app.route("/sessions/<st_id>")
