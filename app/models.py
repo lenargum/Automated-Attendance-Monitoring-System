@@ -47,6 +47,14 @@ class Course(db.Model):
     students = db.relationship('User', secondary=student_courses)
 
 
+# Session type class
+class SessionType(db.Model):
+    __tablename__ = "session_type"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), unique=True)
+    sessions = db.relationship('Session', backref='type', lazy=True)
+
+
 # Session model
 class Session(db.Model):
     __tablename__ = "session"
@@ -54,6 +62,7 @@ class Session(db.Model):
     date = db.Column(db.DateTime)
     is_closed = db.Column(db.Boolean)
     tokens = db.relationship('Token', backref='session', lazy=True)
+    type_id = db.Column(db.Integer, db.ForeignKey("session_type.id"), nullable=False)
     faculty_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     students = db.relationship("User", secondary=session_student)
