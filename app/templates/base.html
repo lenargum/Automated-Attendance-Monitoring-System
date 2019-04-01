@@ -26,8 +26,11 @@
                     <li><a href="{{ url_for('qr_code_generate') }}">QRcode generate</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">Log In</a></li>
+                    {% else %}
                     <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+                    {% endif %}
                 </ul>
                 <!--<ul class="nav navbar-nav navbar-right">-->
                     <!--<li><a href="{{ url_for('index') }}">Home</a></li>-->
