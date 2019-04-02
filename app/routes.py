@@ -97,7 +97,7 @@ def session_qr(s_id):
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
 @login_required
 def qr_code_token(token_key):
-    token: models.Token = models.token_by_key(token_key)
+    token: models.Token = models.Token.query.filter_by(key=token_key).first_or_404()
     if token.expired:
         flash("Sorry! This token is no longer available", "warning")
         return redirect("/index")
