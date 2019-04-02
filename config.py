@@ -1,5 +1,9 @@
 import os
 import socket
+from dotenv import load_dotenv
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

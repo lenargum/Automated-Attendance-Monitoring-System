@@ -7,6 +7,7 @@ from app import db
 from app import qrcode
 from app import models
 from datetime import datetime
+from werkzeug.urls import url_parse
 
 
 @app.route("/")
@@ -113,11 +114,18 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        # Get 'next' argument if exists
+        next_page = request.args.get('next')
         user = models.User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
-            return redirect(url_for('login'))
+            flash('Invalid username or password')
+            # If 'next' arg exists then append it again
+            return redirect(url_for('login', next=next_page))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        # If 'next' argument exists and correct then redirect to that page, redirect to 'index' otherwise
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
 

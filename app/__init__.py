@@ -14,6 +14,7 @@ migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 qrcode = QRcode(app)
 login = LoginManager(app)
+login.login_view = 'login'
 
 from app import routes
 from app import models

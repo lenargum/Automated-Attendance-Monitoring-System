@@ -111,3 +111,6 @@ app.db
 
 # migrations
 migrations/
+
+# sample data
+sample_data
