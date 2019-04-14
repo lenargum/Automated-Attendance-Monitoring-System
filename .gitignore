@@ -114,3 +114,5 @@ migrations/
 
 # sample data
 sample_data
+# SonarScanner data
+.scannerwork/
