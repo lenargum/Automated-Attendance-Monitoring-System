@@ -20,10 +20,7 @@ def index():
 @app.route("/session/create", methods=['GET', 'POST'])
 @login_required
 def session_create():
-    if not current_user.is_faculty:
-        flash("Only faculty can create new attendance session")
-        return redirect("index")
-    # TODO: take courses relevant to current faculty user
+    # TODO: show only courses that current user can manage
     courses = models.Course.query.all()
     s_types = models.SessionType.query.all()
     form = SessionCreateForm()
@@ -45,9 +42,6 @@ def session_create():
 @app.route("/created_sessions")
 @login_required
 def created_sessions_list():
-    if not current_user.is_faculty:
-        flash("Only faculty can manage session")
-        return redirect("index")
     return render_template("created_sessions_list.html")
 
 
@@ -67,9 +61,10 @@ def student_sessions(st_id):
 @app.route("/session/<s_id>")
 @login_required
 def session_manage(s_id):
-    if not current_user.is_faculty:
-        flash("Only faculty can manage session")
-        return redirect("index")
+    # TODO: restrict only to those who can manage course
+    # if not current_user.is_faculty:
+    #     flash("Only faculty can manage session")
+    #     return redirect("index")
     session = models.Session.query.filter_by(id=s_id).first_or_404()
     return render_template("session.html", session=session)
 
@@ -77,9 +72,7 @@ def session_manage(s_id):
 @app.route("/session_qr/<s_id>")
 @login_required
 def session_qr(s_id):
-    if not current_user.is_faculty:
-        flash("Only faculty can show QRs")
-        return redirect("index")
+    # TODO: restrict only to those who can manage course
     hostname = request.headers["Host"]
     # flash(app.config["SERVER_URL"])
     if hostname.startswith("127.0.0.1"):

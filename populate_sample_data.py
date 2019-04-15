@@ -15,12 +15,12 @@ courses = [
     {"name": "[B17] Networks", "faculty_id": 1}
 ]
 
-print("Adding Main Professor")
-u = models.User(name="Prof", surname="Fessor", email="prof@mail", is_faculty=True)
-u.set_password(input("Enter Main Prof password: "))
+print("Adding Admin")
+u = models.User(name="Admin", surname="Admin", email="none@mail", is_admin=True)
+u.set_password(input("Enter Admin password: "))
 db.session.add(u)
 db.session.commit()
-print("Main Prof Added")
+print("Admin Added")
 
 
 print("Adding session types")

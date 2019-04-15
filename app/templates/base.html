@@ -25,10 +25,8 @@
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav">
                     {% if not current_user.is_anonymous %}
-                        {% if current_user.is_faculty %}
-                            <li><a href="{{ url_for('session_create') }}">New session</a></li>
-                            <li><a href="{{ url_for('created_sessions_list') }}">Created sessions</a></li>
-                        {% endif %}
+                        <li><a href="{{ url_for('session_create') }}">New session</a></li>
+                        <li><a href="{{ url_for('created_sessions_list') }}">Created sessions</a></li>
                         <li><a href="{{ url_for('attended_sessions_list') }}">Attended sessions</a></li>
                     {% endif %}
                 </ul>
