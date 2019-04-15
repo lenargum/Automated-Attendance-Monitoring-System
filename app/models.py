@@ -36,7 +36,7 @@ class User(UserMixin, db.Model):
     surname = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
     password_hash = db.Column(db.String(128))
-    is_faculty = db.Column(db.Boolean)
+    is_admin = db.Column(db.Boolean)
     sessions = db.relationship("Session", secondary=session_student)
     created_sessions = db.relationship('Session', backref='creator', lazy=True)
     courses = db.relationship('Course', secondary=student_courses)
@@ -52,9 +52,23 @@ class User(UserMixin, db.Model):
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
-    faculty_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     sessions = db.relationship('Session', backref='course', lazy=True)
     students = db.relationship('User', secondary=student_courses)
+
+
+# Roles class (can be assigned as relation between users and course)
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), unique=True)
+    can_manage_sessions = db.Column(db.Boolean)
+    # sessions = db.relationship('Session', backref='type', lazy=True)
+
+
+class Enrollment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    role = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
 
 
 # Session type class
