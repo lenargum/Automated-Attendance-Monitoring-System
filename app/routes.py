@@ -93,6 +93,18 @@ def session_qr(s_id):
     return render_template("session_qr.html", session=session)
 
 
+@app.route("/admin")
+@login_required
+def admin_panel():
+    return "test"
+
+
+@app.route("/admin/users")
+@login_required
+def users():
+    return "test"
+
+
 # Allow enter and submit attendance data if token is correct
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
 @login_required
