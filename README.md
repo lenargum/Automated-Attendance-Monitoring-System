@@ -39,3 +39,22 @@ __Example:__
 10.240.17.219:5000
 ```
 If you are trying to access to the site on the same machine as the server is running, do not use ```localhost``` or ```127.0.0.1```, because it will break URLs in QR-codes. Use your network address or ip instead.
+
+### Tests
+#### Execute commands:
+
+*Unix Bash (Linux, Mac, etc.)*:
+```
+$ export PYTHONPATH='./'
+$ pytest
+```
+*Windows CMD*:
+```
+> set PYTHONPATH='./'
+> pytest
+```
+*Windows PowerShell*:
+```
+> $env:PYTHONPATH='./'
+> pytest
+```
