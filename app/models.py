@@ -67,7 +67,7 @@ class Role(db.Model):
 class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    course = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     role = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
 
 
