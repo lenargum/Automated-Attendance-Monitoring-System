@@ -6,3 +6,4 @@ Flask_QRcode==2.0.2
 Flask-Bootstrap==3.3.7.1
 Flask-Login==0.4.1
 python-dotenv
+pytest==4.4.1
