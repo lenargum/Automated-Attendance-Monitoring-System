@@ -23,7 +23,11 @@
                 <td>{{session.date.strftime("%H:%M")}}</td>
                 <td>{{session.students|length}}</td>
                 <td><b>{{"Yes" if session.is_closed else "No"}}</b></td>
+                {% if session.is_closed %}
+                <td>-</td>
+                {% else %}
                 <td><a class="btn btn-default btn-sm" href="{{ url_for("session_manage", s_id=session.id) }}" role="button">Manage</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>

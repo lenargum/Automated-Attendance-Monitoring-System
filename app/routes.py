@@ -1,4 +1,5 @@
-from flask import render_template, redirect, url_for, request, jsonify, flash
+import os
+from flask import render_template, redirect, url_for, request, jsonify, flash, send_file
 from markupsafe import Markup
 from app import app
 from app.forms import SessionCreateForm, LoginForm
@@ -22,9 +23,8 @@ def index():
 def session_create():
     if not current_user.is_faculty:
         flash("Only faculty can create new attendance session")
-        return redirect("index")
-    # TODO: take courses relevant to current faculty user
-    courses = models.Course.query.all()
+        return redirect(url_for("index"))
+    courses = models.Course.query.filter_by(faculty_id=current_user.id)
     s_types = models.SessionType.query.all()
     form = SessionCreateForm()
     form.course.choices = [(c.id, c.name) for c in courses]
@@ -46,15 +46,61 @@ def session_create():
 @login_required
 def created_sessions_list():
     if not current_user.is_faculty:
-        flash("Only faculty can manage session")
-        return redirect("index")
+        flash("Only faculty can manage sessions")
+        return redirect(url_for("index"))
     return render_template("created_sessions_list.html")
 
 
-@app.route("/attended_sessions")
+@app.route("/attended_sessions", methods=['GET', 'POST'])
 @login_required
 def attended_sessions_list():
-    return render_template("attended_sessions_list.html")
+    if request.method == 'GET':
+        return render_template("attended_sessions_list.html")
+    elif request.method == 'POST':
+        if request.form['export_button'] == 'Export to xlsx':
+            # formation of xlsx file:
+            from xlsxwriter import Workbook
+            repository_path = os.path.dirname(os.path.dirname(__file__))
+
+            # workbook init
+            workbook = Workbook("temp.xlsx")
+            worksheet = workbook.add_worksheet()
+
+            # certain cells formation
+            classic_format = workbook.add_format()
+            classic_format.set_border()
+            classic_date_format = workbook.add_format({'num_format': 'd mmmm yyyy'})
+            classic_date_format.set_border()
+            classic_time_format = workbook.add_format({'num_format': 'HH:mm:ss'})
+            classic_time_format.set_border()
+            header_format = workbook.add_format({'bold': 1, 'align': 'center'})
+            header_format.set_border()
+            header_format.set_bottom(2)
+
+            # placing headers on worksheet
+            worksheet.write_string(0, 0, "Course", header_format)
+            worksheet.set_column('A:A', 20)
+            worksheet.write_string(0, 1, "Type", header_format)
+            worksheet.set_column('B:B', 20)
+            worksheet.write_string(0, 2, "Date", header_format)
+            worksheet.set_column('C:C', 15)
+            worksheet.write_string(0, 3, "Time", header_format)
+            worksheet.write_string(0, 4, "Finished", header_format)
+
+            # placing body of table on worksheet
+            current_row = 1
+            for session in current_user.sessions:
+                worksheet.write_string(current_row, 0, session.course.name, classic_format)
+                worksheet.write_string(current_row, 1, session.type.name, classic_format)
+                worksheet.write_datetime(current_row, 2, session.date, classic_date_format)
+                worksheet.write_datetime(current_row, 3, session.date, classic_time_format)
+                worksheet.write_string(current_row, 4, "Yes" if session.is_closed else "No", classic_format)
+                current_row += 1
+
+            workbook.close()
+            workbook_filename = "{}_{}.xlsx".format(current_user.surname, current_user.name)  # endpoint filename
+            return send_file(os.path.join(repository_path, "temp.xlsx"), as_attachment=True,
+                             attachment_filename=workbook_filename)
 
 
 @app.route("/student_sessions/<st_id>")
@@ -64,14 +110,28 @@ def student_sessions(st_id):
     return render_template("student_sessions.html", user=user)
 
 
-@app.route("/session/<s_id>")
+@app.route("/session/<s_id>", methods=['GET', 'POST'])
 @login_required
 def session_manage(s_id):
-    if not current_user.is_faculty:
-        flash("Only faculty can manage session")
-        return redirect("index")
-    session = models.Session.query.filter_by(id=s_id).first_or_404()
-    return render_template("session.html", session=session)
+    if request.method == 'GET':
+        if not current_user.is_faculty:
+            flash("Only faculty can manage session")
+            return redirect(url_for("index"))
+        session = models.Session.query.filter_by(id=s_id).first_or_404()
+        return render_template("session.html", session=session)
+    if request.method == 'POST':
+        if request.form['close_button'] == 'Close':
+            session = models.Session.query.filter_by(id=s_id).first_or_404()
+            session.is_closed = True
+            db.session.commit()
+            flash("Success! Session {}({}) is closed.".format(session.course.name, session.type.name))
+            return redirect(url_for("created_sessions_list"))
+        else:
+            if not current_user.is_faculty:
+                flash("Only faculty can manage session")
+                return redirect(url_for("index"))
+            session = models.Session.query.filter_by(id=s_id).first_or_404()
+            return render_template("session.html", session=session)
 
 
 @app.route("/session_qr/<s_id>")
@@ -79,14 +139,13 @@ def session_manage(s_id):
 def session_qr(s_id):
     if not current_user.is_faculty:
         flash("Only faculty can show QRs")
-        return redirect("index")
+        return redirect(url_for("index"))
     hostname = request.headers["Host"]
     # flash(app.config["SERVER_URL"])
-    if hostname.startswith("127.0.0.1"):
+    if hostname.startswith("127.0.0.1") or hostname.startswith("localhost"):
         port = hostname.split(":")[1]
         message = "Accessing from localhost. <a href=http://{}><b>Please use global ip or address instead</b></a>"
-        message = message.format(app.config["GLOBAL_IP"]+":"+port+url_for("session_qr", s_id=s_id))
-        print(message)
+        message = message.format(app.config["GLOBAL_IP"] + ":" + port + url_for("session_qr", s_id=s_id))
         flash(Markup(message), "danger")
         # return redirect(url_for("session_qr", s_id=s_id, _external=app.config["SERVER_URL"]+":"+port))
     session = models.Session.query.filter_by(id=s_id).first_or_404()
@@ -104,19 +163,26 @@ def qr_code_token(token_key):
     session: models.Session = token.session
     session.students.append(current_user)
     db.session.commit()
-    flash("Success! You attendance for {} was recorded".format(session.course.name))
+    flash("Success! You attendance for {}({}) was recorded".format(session.course.name, session.type.name))
     return redirect("/index")
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    hostname = request.headers["Host"]
+    # flash(app.config["SERVER_URL"])
+    if hostname.startswith("127.0.0.1") or hostname.startswith("localhost"):
+        port = hostname.split(":")[1]
+        message = "Accessing from localhost. <a href=http://{}><b>Please use global ip or address instead</b></a>"
+        message = message.format(app.config["GLOBAL_IP"] + ":" + port + url_for("login"))
+        flash(Markup(message), "danger")
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
         # Get 'next' argument if exists
         next_page = request.args.get('next')
-        user = models.User.query.filter_by(email=form.email.data).first()
+        user = models.User.query.filter_by(email=form.email.data.strip()).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             # If 'next' arg exists then append it again
@@ -144,34 +210,41 @@ def profile(email):
 
 # API calls (to call from client using js and jQuery)
 
-# TODO: only accessible for faculty
 @login_required
 @app.route("/api/qr_image")
 def qrcode_image():
-    session_id = request.args.get("session_id", None)
-    if not session_id:
-        return jsonify({"status": "fail"})
-    try:
-        session_id = int(session_id)
-    except ValueError:
-        return jsonify({"status": "fail"})
-    token = models.get_token(session_id)
-    if not token:
-        return jsonify({"status": "fail"})
-    key = token.key
-    qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=True))
-    return jsonify({"status": "ok", "image": qr_base64})
+    if not current_user.is_faculty:
+        flash("Only faculty can show QRs")
+        return redirect(url_for("index"))
+    else:
+        session_id = request.args.get("session_id", None)
+        if not session_id:
+            return jsonify({"status": "fail"})
+        try:
+            session_id = int(session_id)
+        except ValueError:
+            return jsonify({"status": "fail"})
+        token = models.get_token(session_id)
+        if not token:
+            return jsonify({"status": "fail"})
+        key = token.key
+        qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=True))
+        return jsonify({"status": "ok", "image": qr_base64})
 
 
-# TODO: only accessible for faculty
+@login_required
 @app.route("/api/qr_regen")
 def regen():
-    session_id = request.args.get("session_id", None)
-    if not session_id:
-        return jsonify({"status": "fail"})
-    try:
-        session_id = int(session_id)
-    except ValueError:
-        return jsonify({"status": "fail"})
-    models.reset_token(session_id)
-    return "ok"
+    if not current_user.is_faculty:
+        flash("Only faculty can generate QRs")
+        return redirect(url_for("index"))
+    else:
+        session_id = request.args.get("session_id", None)
+        if not session_id:
+            return jsonify({"status": "fail"})
+        try:
+            session_id = int(session_id)
+        except ValueError:
+            return jsonify({"status": "fail"})
+        models.reset_token(session_id)
+        return "ok"
