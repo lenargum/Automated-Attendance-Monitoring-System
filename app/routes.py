@@ -66,7 +66,6 @@ def student_sessions(st_id):
 @login_required
 def session_manage(s_id):
     # session = models.Session.query.filter_by(id=s_id).first_or_404()
-    # # TODO: beautify query code using joins with role
     # enrollments = models.Enrollment.query.filter_by(user=current_user, course=session.course)
     # can_manage = False
     # for enrollment in enrollments:
@@ -90,7 +89,6 @@ def session_manage(s_id):
 @app.route("/session_qr/<s_id>")
 @login_required
 def session_qr(s_id):
-    # TODO: restrict only to those who can manage course
     hostname = request.headers["Host"]
     # flash(app.config["SERVER_URL"])
     if hostname.startswith("127.0.0.1"):
