@@ -100,17 +100,14 @@ def session_qr(s_id):
         print(message)
         flash(Markup(message), "danger")
         # return redirect(url_for("session_qr", s_id=s_id, _external=app.config["SERVER_URL"]+":"+port))
-    session = models.Session.query.filter_by(id=s_id).first_or_404()
-    # TODO: beautify query code using joins with role
-    enrollments = models.Enrollment.query.filter_by(user=current_user, course=session.course)
-    can_manage = False
-    for enrollment in enrollments:
-        if enrollment.role.can_manage_sessions:
-            can_manage = True
-            break
-    if not can_manage:
-        flash("Only faculty can manage session")
-        return redirect("index")
+    session = models.Session.query\
+        .join(models.Course)\
+        .join(models.Enrollment)\
+        .join(models.User)\
+        .join(models.Role)\
+        .filter(models.Session.id == s_id)\
+        .filter(models.User.id == current_user.id)\
+        .filter(models.Role.can_manage_sessions == True).first_or_404()
     return render_template("session_qr.html", session=session)
 
 
