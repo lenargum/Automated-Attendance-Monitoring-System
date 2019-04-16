@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 from app import db
 from app import models
