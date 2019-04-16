@@ -6,6 +6,7 @@
         <caption><b>Sessions</b></caption>
         <tr>
         <th>Course</th>
+        <th>Type</th>
         <th>Date</th>
         <th>Time</th>
         <th>Attended Students</th>
@@ -19,6 +20,7 @@
             <tr>
             {% endif %}
                 <td>{{session.course.name}}</td>
+                <td>{{session.type.name}}</td>
                 <td>{{session.date.strftime("%d.%m.%Y")}}</td>
                 <td>{{session.date.strftime("%H:%M")}}</td>
                 <td>{{session.students|length}}</td>

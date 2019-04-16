@@ -81,7 +81,7 @@ def attended_sessions_list():
             worksheet.write_string(0, 0, "Course", header_format)
             worksheet.set_column('A:A', 20)
             worksheet.write_string(0, 1, "Type", header_format)
-            worksheet.set_column('B:B', 20)
+            worksheet.set_column('B:B', 12)
             worksheet.write_string(0, 2, "Date", header_format)
             worksheet.set_column('C:C', 15)
             worksheet.write_string(0, 3, "Time", header_format)
