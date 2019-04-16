@@ -9,3 +9,4 @@ python-dotenv
 XlsxWriter==1.1.6
 Werkzeug==0.15.2
 markupsafe==1.1.1
+pytest==4.4.1
