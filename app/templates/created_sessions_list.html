@@ -6,6 +6,7 @@
         <caption><b>Sessions</b></caption>
         <tr>
         <th>Course</th>
+        <th>Type</th>
         <th>Date</th>
         <th>Time</th>
         <th>Attended Students</th>
@@ -19,11 +20,16 @@
             <tr>
             {% endif %}
                 <td>{{session.course.name}}</td>
+                <td>{{session.type.name}}</td>
                 <td>{{session.date.strftime("%d.%m.%Y")}}</td>
                 <td>{{session.date.strftime("%H:%M")}}</td>
                 <td>{{session.students|length}}</td>
                 <td><b>{{"Yes" if session.is_closed else "No"}}</b></td>
+                {% if session.is_closed %}
+                <td>-</td>
+                {% else %}
                 <td><a class="btn btn-default btn-sm" href="{{ url_for("session_manage", s_id=session.id) }}" role="button">Manage</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>
