@@ -5,22 +5,27 @@
     <table class="table table-striped">
         <caption><b>Sessions</b></caption>
         <tr>
-        <th>Course</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Finished</th>
+            <th>Course</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Finished</th>
         </tr>
         {% for session in current_user.sessions %}
-            {%  if session.is_closed %}
-            <tr class="success">
-            {% else %}
-            <tr>
+            {% if session.is_closed %}
+                <tr class="success">
+                    {% else %}
+                <tr>
             {% endif %}
-                <td>{{session.course.name}}</td>
-                <td>{{session.date.strftime("%d.%m.%Y")}}</td>
-                <td>{{session.date.strftime("%H:%M:%S")}}</td>
-                <td><b>{{"Yes" if session.is_closed else "No"}}</b></td>
-            </tr>
+        <td>{{ session.course.name }}</td>
+        <td>{{ session.type.name }}</td>
+        <td>{{ session.date.strftime("%d.%m.%Y") }}</td>
+        <td>{{ session.date.strftime("%H:%M:%S") }}</td>
+        <td><b>{{ "Yes" if session.is_closed else "No" }}</b></td>
+        </tr>
         {% endfor %}
     </table>
+    <form action="" method="post">
+        <input class="btn btn-default" type="submit" name="export_button" value="Export to xlsx">
+    </form>
 {% endblock %}

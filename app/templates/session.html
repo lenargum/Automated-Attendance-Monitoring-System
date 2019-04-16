@@ -4,16 +4,22 @@
     <h1>{{ session.course.name }}</h1>
     <h2>{{ session.type.name }}</h2>
     <h2>started at {{ session.date.strftime("%d.%m.%Y %H:%M:%S") }}</h2>
-    <a type="button" class="btn btn-primary btn-lg active" href="{{ url_for("session_qr", s_id=session.id) }}">Qr-code generation</a>
-    <a type="button" class="btn btn-danger btn-lg active">Close</a>
+    <a type="button" class="btn btn-primary btn-lg active" href="{{ url_for("session_qr", s_id=session.id) }}">Qr-code
+        generation</a>
+    <form action="" method="post">
+        <input type="submit" class="btn btn-danger btn-lg active" name="close_button" value="Close">
+    </form>
     <table class="table table-striped">
         <caption><b>Attended students</b></caption>
         <tr>
-        <th>Name</th>
-        <th>Surname</th>
+            <th>Name</th>
+            <th>Surname</th>
         </tr>
         {% for student in session.students %}
-        <tr><td>{{student.name}}</td><td>{{student.surname}}</td></tr>
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ student.surname }}</td>
+            </tr>
         {% endfor %}
     </table>
 {% endblock %}
