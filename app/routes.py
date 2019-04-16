@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, url_for, request, jsonify, flash, send_file
 from markupsafe import Markup
 from app import app
-from app.forms import SessionCreateForm, LoginForm
+from app.forms import SessionCreateForm, LoginForm, UserCreateForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
@@ -169,10 +169,27 @@ def admin_users():
     return render_template("admin_users.html", users=users)
 
 
-@app.route("/admin/user/<user_id>")
+@app.route("/admin/user/<int:user_id>")
 @login_required
 def admin_manage_user(user_id):
-    return "WIP"
+    user = models.User.query.filter_by(id=user_id).first_or_404()
+    return render_template("admin_manage_user.html", user=user)
+
+
+@app.route("/admin/users/new", methods=['GET', 'POST'])
+@login_required
+def admin_create_user():
+    form = UserCreateForm()
+    if form.validate_on_submit():
+        user = models.User(name=form.name.data,
+                           surname=form.surname.data,
+                           email=form.email.data,
+                           is_admin=form.is_admin.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash("User {} {} created.".format(form.name.data, form.surname.data))
+    return render_template("admin_create_user.html", form=form)
 
 
 @app.route("/admin/courses")

@@ -3,7 +3,11 @@
 {% block app_content %}
     <h1>Admin panel</h1>
     <ul>
-        <li><a href={{ url_for("admin_users") }}>Users</a></li>
+        <li><a href={{ url_for("admin_users") }}>Users</a>
+            <ul>
+                <li><a href={{ url_for("admin_create_user") }}>Create new user</a></li>
+            </ul>
+        </li>
         <li><a href={{ url_for("admin_courses") }}>Courses</a></li>
         <li>Moodle integration (WIP)</li>
     </ul>
