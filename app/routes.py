@@ -148,16 +148,40 @@ def session_qr(s_id):
     return render_template("session_qr.html", session=session)
 
 
+# admin panel pages
+
 @app.route("/admin")
 @login_required
 def admin_panel():
-    return "test"
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    return render_template("admin_panel.html")
 
 
 @app.route("/admin/users")
 @login_required
-def users():
-    return "test"
+def admin_users():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    users = models.User.query.all()
+    return render_template("admin_users.html", users=users)
+
+
+@app.route("/admin/user/<user_id>")
+@login_required
+def admin_manage_user(user_id):
+    return "WIP"
+
+
+@app.route("/admin/courses")
+@login_required
+def admin_courses():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    return render_template("admin_courses.html")
 
 
 # Allow enter and submit attendance data if token is correct

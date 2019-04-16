@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>Admin panel / Users </h1>
+    <table class="table table-striped">
+        <caption><b>Sessions</b></caption>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Admin</th>
+            <th>Manage user</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{user.name}}</td>
+                <td>{{user.surname}}</td>
+                <td>{{user.email}}</td>
+                <td><b>{{"Yes" if user.is_admin else "No"}}</b></td>
+                <td><a class="btn btn-default btn-sm" href="{{ url_for("admin_manage_user", user_id=user.id) }}" role="button">Manage user</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
