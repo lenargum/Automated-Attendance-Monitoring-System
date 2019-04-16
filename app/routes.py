@@ -1,5 +1,4 @@
-import os
-from flask import render_template, redirect, url_for, request, jsonify, flash, send_file
+from flask import render_template, redirect, url_for, request, jsonify, flash
 from markupsafe import Markup
 from app import app
 from app.forms import SessionCreateForm, LoginForm
@@ -21,10 +20,12 @@ def index():
 @app.route("/session/create", methods=['GET', 'POST'])
 @login_required
 def session_create():
-    if not current_user.is_faculty:
-        flash("Only faculty can create new attendance session")
-        return redirect(url_for("index"))
-    courses = models.Course.query.filter_by(faculty_id=current_user.id)
+    courses = models.Course.query\
+        .join(models.Enrollment)\
+        .join(models.User)\
+        .join(models.Role)\
+        .filter(models.User.id == current_user.id)\
+        .filter(models.Role.can_manage_sessions == True).all()
     s_types = models.SessionType.query.all()
     form = SessionCreateForm()
     form.course.choices = [(c.id, c.name) for c in courses]
@@ -46,8 +47,8 @@ def session_create():
 @login_required
 def created_sessions_list():
     if not current_user.is_faculty:
-        flash("Only faculty can manage sessions")
-        return redirect(url_for("index"))
+        flash("Only faculty can manage session")
+        return redirect("index")
     return render_template("created_sessions_list.html")
 
 
@@ -110,36 +111,23 @@ def student_sessions(st_id):
     return render_template("student_sessions.html", user=user)
 
 
-@app.route("/session/<s_id>", methods=['GET', 'POST'])
+@app.route("/session/<s_id>")
 @login_required
 def session_manage(s_id):
-    if request.method == 'GET':
-        if not current_user.is_faculty:
-            flash("Only faculty can manage session")
-            return redirect(url_for("index"))
-        session = models.Session.query.filter_by(id=s_id).first_or_404()
-        return render_template("session.html", session=session)
-    if request.method == 'POST':
-        if request.form['close_button'] == 'Close':
-            session = models.Session.query.filter_by(id=s_id).first_or_404()
-            session.is_closed = True
-            db.session.commit()
-            flash("Success! Session {}({}) is closed.".format(session.course.name, session.type.name))
-            return redirect(url_for("created_sessions_list"))
-        else:
-            if not current_user.is_faculty:
-                flash("Only faculty can manage session")
-                return redirect(url_for("index"))
-            session = models.Session.query.filter_by(id=s_id).first_or_404()
-            return render_template("session.html", session=session)
+    session = models.Session.query\
+        .join(models.Course)\
+        .join(models.Enrollment)\
+        .join(models.User)\
+        .join(models.Role)\
+        .filter(models.Session.id == s_id)\
+        .filter(models.User.id == current_user.id)\
+        .filter(models.Role.can_manage_sessions == True).first_or_404()
+    return render_template("session.html", session=session)
 
 
 @app.route("/session_qr/<s_id>")
 @login_required
 def session_qr(s_id):
-    if not current_user.is_faculty:
-        flash("Only faculty can show QRs")
-        return redirect(url_for("index"))
     hostname = request.headers["Host"]
     # flash(app.config["SERVER_URL"])
     if hostname.startswith("127.0.0.1") or hostname.startswith("localhost"):
@@ -148,7 +136,14 @@ def session_qr(s_id):
         message = message.format(app.config["GLOBAL_IP"] + ":" + port + url_for("session_qr", s_id=s_id))
         flash(Markup(message), "danger")
         # return redirect(url_for("session_qr", s_id=s_id, _external=app.config["SERVER_URL"]+":"+port))
-    session = models.Session.query.filter_by(id=s_id).first_or_404()
+    session = models.Session.query\
+        .join(models.Course)\
+        .join(models.Enrollment)\
+        .join(models.User)\
+        .join(models.Role)\
+        .filter(models.Session.id == s_id)\
+        .filter(models.User.id == current_user.id)\
+        .filter(models.Role.can_manage_sessions == True).first_or_404()
     return render_template("session_qr.html", session=session)
 
 
@@ -182,7 +177,7 @@ def login():
     if form.validate_on_submit():
         # Get 'next' argument if exists
         next_page = request.args.get('next')
-        user = models.User.query.filter_by(email=form.email.data.strip()).first()
+        user = models.User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             # If 'next' arg exists then append it again
@@ -210,41 +205,35 @@ def profile(email):
 
 # API calls (to call from client using js and jQuery)
 
-@login_required
+# TODO: only accessible for faculty
 @app.route("/api/qr_image")
-def qrcode_image():
-    if not current_user.is_faculty:
-        flash("Only faculty can show QRs")
-        return redirect(url_for("index"))
-    else:
-        session_id = request.args.get("session_id", None)
-        if not session_id:
-            return jsonify({"status": "fail"})
-        try:
-            session_id = int(session_id)
-        except ValueError:
-            return jsonify({"status": "fail"})
-        token = models.get_token(session_id)
-        if not token:
-            return jsonify({"status": "fail"})
-        key = token.key
-        qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=True))
-        return jsonify({"status": "ok", "image": qr_base64})
-
-
 @login_required
+def qrcode_image():
+    session_id = request.args.get("session_id", None)
+    if not session_id:
+        return jsonify({"status": "fail"})
+    try:
+        session_id = int(session_id)
+    except ValueError:
+        return jsonify({"status": "fail"})
+    token = models.get_token(session_id)
+    if not token:
+        return jsonify({"status": "fail"})
+    key = token.key
+    qr_base64 = qrcode(url_for("qr_code_token", token_key=key, _external=True))
+    return jsonify({"status": "ok", "image": qr_base64})
+
+
+# TODO: only accessible for faculty
 @app.route("/api/qr_regen")
+@login_required
 def regen():
-    if not current_user.is_faculty:
-        flash("Only faculty can generate QRs")
-        return redirect(url_for("index"))
-    else:
-        session_id = request.args.get("session_id", None)
-        if not session_id:
-            return jsonify({"status": "fail"})
-        try:
-            session_id = int(session_id)
-        except ValueError:
-            return jsonify({"status": "fail"})
-        models.reset_token(session_id)
-        return "ok"
+    session_id = request.args.get("session_id", None)
+    if not session_id:
+        return jsonify({"status": "fail"})
+    try:
+        session_id = int(session_id)
+    except ValueError:
+        return jsonify({"status": "fail"})
+    models.reset_token(session_id)
+    return "ok"

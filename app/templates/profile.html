@@ -12,10 +12,8 @@
     <tr>
         <td>{{user.name}}</td>
         <td>{{user.surname}}</td>
-        {% if user.is_faculty %}
-            <td>Faculty</td>
-        {% else %}
-            <td>Student</td>
+        {% if user.is_admin %}
+            <td>admin</td>
         {% endif %}
         <td>{{user.email}}</td>
     </tr>

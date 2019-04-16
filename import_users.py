@@ -21,7 +21,7 @@ for line in lines:
     if models.User.query.filter_by(email=email).first():
         print("Cannot add user {} {} ({}): email already in database".format(name, surname, data))
         continue
-    u = models.User(name=name, surname=surname, email=email, is_faculty=False)
+    u = models.User(name=name, surname=surname, email=email, is_admin=False)
     u.set_password("test")
     db.session.add(u)
     db.session.commit()
