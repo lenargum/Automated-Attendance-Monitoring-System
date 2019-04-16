@@ -20,8 +20,12 @@ def index():
 @app.route("/session/create", methods=['GET', 'POST'])
 @login_required
 def session_create():
-    # TODO: show only courses that current user can manage
-    courses = models.Course.query.all()
+    courses = models.Course.query\
+        .join(models.Enrollment)\
+        .join(models.User)\
+        .join(models.Role)\
+        .filter(models.User.id == current_user.id)\
+        .filter(models.Role.can_manage_sessions == True).all()
     s_types = models.SessionType.query.all()
     form = SessionCreateForm()
     form.course.choices = [(c.id, c.name) for c in courses]
@@ -61,11 +65,25 @@ def student_sessions(st_id):
 @app.route("/session/<s_id>")
 @login_required
 def session_manage(s_id):
-    # TODO: restrict only to those who can manage course
-    # if not current_user.is_faculty:
+    # session = models.Session.query.filter_by(id=s_id).first_or_404()
+    # # TODO: beautify query code using joins with role
+    # enrollments = models.Enrollment.query.filter_by(user=current_user, course=session.course)
+    # can_manage = False
+    # for enrollment in enrollments:
+    #     if enrollment.role.can_manage_sessions:
+    #         can_manage = True
+    #         break
+    # if not can_manage:
     #     flash("Only faculty can manage session")
     #     return redirect("index")
-    session = models.Session.query.filter_by(id=s_id).first_or_404()
+    session = models.Session.query\
+        .join(models.Course)\
+        .join(models.Enrollment)\
+        .join(models.User)\
+        .join(models.Role)\
+        .filter(models.Session.id == s_id)\
+        .filter(models.User.id == current_user.id)\
+        .filter(models.Role.can_manage_sessions == True).first_or_404()
     return render_template("session.html", session=session)
 
 
@@ -83,6 +101,16 @@ def session_qr(s_id):
         flash(Markup(message), "danger")
         # return redirect(url_for("session_qr", s_id=s_id, _external=app.config["SERVER_URL"]+":"+port))
     session = models.Session.query.filter_by(id=s_id).first_or_404()
+    # TODO: beautify query code using joins with role
+    enrollments = models.Enrollment.query.filter_by(user=current_user, course=session.course)
+    can_manage = False
+    for enrollment in enrollments:
+        if enrollment.role.can_manage_sessions:
+            can_manage = True
+            break
+    if not can_manage:
+        flash("Only faculty can manage session")
+        return redirect("index")
     return render_template("session_qr.html", session=session)
 
 
@@ -138,8 +166,8 @@ def profile(email):
 # API calls (to call from client using js and jQuery)
 
 # TODO: only accessible for faculty
-@login_required
 @app.route("/api/qr_image")
+@login_required
 def qrcode_image():
     session_id = request.args.get("session_id", None)
     if not session_id:
@@ -158,6 +186,7 @@ def qrcode_image():
 
 # TODO: only accessible for faculty
 @app.route("/api/qr_regen")
+@login_required
 def regen():
     session_id = request.args.get("session_id", None)
     if not session_id:

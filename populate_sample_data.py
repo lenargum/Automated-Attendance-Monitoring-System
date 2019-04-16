@@ -10,9 +10,9 @@ session_types = [
 ]
 
 courses = [
-    {"name": "[B17] Software Project", "faculty_id": 1},
-    {"name": "[B17] Probability and Statistics", "faculty_id": 1},
-    {"name": "[B17] Networks", "faculty_id": 1}
+    {"name": "[B17] Software Project"},
+    {"name": "[B17] Probability and Statistics"},
+    {"name": "[B17] Networks"}
 ]
 
 print("Adding Admin")
