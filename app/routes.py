@@ -172,6 +172,9 @@ def admin_users():
 @app.route("/admin/user/<int:user_id>")
 @login_required
 def admin_manage_user(user_id):
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
     user = models.User.query.filter_by(id=user_id).first_or_404()
     return render_template("admin_manage_user.html", user=user)
 
@@ -179,6 +182,9 @@ def admin_manage_user(user_id):
 @app.route("/admin/users/new", methods=['GET', 'POST'])
 @login_required
 def admin_create_user():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
     form = UserCreateForm()
     if form.validate_on_submit():
         user = models.User(name=form.name.data,
