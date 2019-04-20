@@ -169,16 +169,6 @@ def admin_users():
     return render_template("admin_users.html", users=users)
 
 
-@app.route("/admin/user/<int:user_id>")
-@login_required
-def admin_manage_user(user_id):
-    if not current_user.is_admin:
-        flash("Only admin can do that")
-        redirect(url_for("index"))
-    user = models.User.query.filter_by(id=user_id).first_or_404()
-    return render_template("admin_manage_user.html", user=user)
-
-
 @app.route("/admin/users/new", methods=['GET', 'POST'])
 @login_required
 def admin_create_user():
@@ -256,9 +246,9 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile/<u_id>')
+@app.route('/user/<u_id>')
 @login_required
-def profile(u_id):
+def user_profile(u_id):
     user = models.User.query.filter_by(id=u_id).first_or_404()
     return render_template('profile.html', user=user)
 
