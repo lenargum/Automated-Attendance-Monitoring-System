@@ -256,10 +256,10 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile/<email>')
+@app.route('/profile/<u_id>')
 @login_required
-def profile(email):
-    user = models.User.query.filter_by(email=email).first_or_404()
+def profile(u_id):
+    user = models.User.query.filter_by(id=u_id).first_or_404()
     return render_template('profile.html', user=user)
 
 
