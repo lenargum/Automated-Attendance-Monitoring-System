@@ -21,10 +21,6 @@
         </div>
     </div>
     {% if current_user.is_admin %}
-    <div class="row">
-        <div class="col-md-12">
-          {% include "profile_admin_control.html" %}
-        </div>
-    </div>
+        <button type="button" class="btn btn-default">Go to admin control</button>
     {% endif %}
 {% endblock %}

@@ -169,6 +169,16 @@ def admin_users():
     return render_template("admin_users.html", users=users)
 
 
+@app.route("/admin/user/<int:u_id>")
+@login_required
+def admin_manage_user(u_id):
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    user = models.User.query.filter_by(id=u_id).first_or_404()
+    return render_template("admin_manage_user.html", user=user)
+
+
 @app.route("/admin/users/new", methods=['GET', 'POST'])
 @login_required
 def admin_create_user():

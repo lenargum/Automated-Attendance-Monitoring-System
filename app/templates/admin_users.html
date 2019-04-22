@@ -17,7 +17,7 @@
                 <td>{{user.surname}}</td>
                 <td>{{user.email}}</td>
                 <td><b>{{"Yes" if user.is_admin else "No"}}</b></td>
-                <td><a class="btn btn-default btn-sm" href="{{ url_for("user_profile", u_id=user.id) }}" role="button">Manage user</a></td>
+                <td><a class="btn btn-default btn-sm" href="{{ url_for("admin_manage_user", u_id=user.id) }}" role="button">Manage user</a></td>
             </tr>
         {% endfor %}
     </table>

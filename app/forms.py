@@ -22,7 +22,7 @@ class UserCreateForm(FlaskForm):
     surname = StringField("Name", validators=[DataRequired()], render_kw={"placeholder": "New user surname"})
     email = StringField("Email", validators=[DataRequired(), Email()], render_kw={"placeholder": "e-mail address"})
     password = PasswordField("Password", validators=[DataRequired()], render_kw={"placeholder": "Enter password"})
-    password_2 = PasswordField("Repeat assword", validators=[DataRequired(), EqualTo("password")],
+    password_2 = PasswordField("Repeat password", validators=[DataRequired(), EqualTo("password")],
                                render_kw={"placeholder": "Enter password again"})
     is_admin = BooleanField("Is admin?")
     submit = SubmitField("Create user")
@@ -31,3 +31,10 @@ class UserCreateForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+
+class AdminUserModifyForm(FlaskForm):
+    password = PasswordField("New password", validators=[DataRequired()], render_kw={"placeholder": "Enter password"})
+    password_2 = PasswordField("Repeat password", validators=[DataRequired(), EqualTo("password")],
+                               render_kw={"placeholder": "Enter password again"})
+
