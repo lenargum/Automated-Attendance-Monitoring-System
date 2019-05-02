@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, url_for, request, jsonify, flash, send_file
 from markupsafe import Markup
 from app import app
-from app.forms import SessionCreateForm, LoginForm, UserCreateForm
+from app.forms import SessionCreateForm, LoginForm, UserCreateForm, AdminUserModifyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
@@ -169,14 +169,37 @@ def admin_users():
     return render_template("admin_users.html", users=users)
 
 
-@app.route("/admin/user/<int:u_id>")
+@app.route("/admin/user/<int:u_id>", methods=['GET', 'POST'])
 @login_required
 def admin_manage_user(u_id):
     if not current_user.is_admin:
         flash("Only admin can do that")
         redirect(url_for("index"))
+    form = AdminUserModifyForm()
     user = models.User.query.filter_by(id=u_id).first_or_404()
-    return render_template("admin_manage_user.html", user=user)
+    if form.validate_on_submit():
+        modified = []
+        if form.name.data and form.name.data != user.name:
+            modified.append("Name")
+            user.name = form.name.data
+        if form.surname.data and form.surname.data != user.surname:
+            modified.append("Surname")
+            user.surname = form.surname.data
+        if form.password.data:
+            modified.append("Password")
+            user.set_password(form.password.data)
+        if form.is_admin.data != user.is_admin:
+            modified.append("Admin status")
+            user.is_admin = form.is_admin.data
+        if modified:
+            flash(", ".join(modified)+" modified!")
+            db.session.add(user)
+            db.session.commit()
+        return redirect(url_for("admin_manage_user", u_id=u_id))
+    form.is_admin.data = user.is_admin
+    form.name.data = user.name
+    form.surname.data = user.surname
+    return render_template("admin_manage_user.html", user=user, form=form)
 
 
 @app.route("/admin/users/new", methods=['GET', 'POST'])

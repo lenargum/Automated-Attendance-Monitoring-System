@@ -34,7 +34,10 @@ class UserCreateForm(FlaskForm):
 
 
 class AdminUserModifyForm(FlaskForm):
-    password = PasswordField("New password", validators=[DataRequired()], render_kw={"placeholder": "Enter password"})
-    password_2 = PasswordField("Repeat password", validators=[DataRequired(), EqualTo("password")],
+    name = StringField("Name", render_kw={"placeholder": "New name"})
+    surname = StringField("Name", render_kw={"placeholder": "New surname"})
+    password = PasswordField("New password", render_kw={"placeholder": "Enter password"})
+    password_2 = PasswordField("Repeat password", validators=[EqualTo("password")],
                                render_kw={"placeholder": "Enter password again"})
-
+    is_admin = BooleanField("Is admin?")
+    submit = SubmitField("Save")
