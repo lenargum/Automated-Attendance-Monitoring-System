@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, url_for, request, jsonify, flash, send_file
 from markupsafe import Markup
 from app import app
-from app.forms import SessionCreateForm, LoginForm
+from app.forms import SessionCreateForm, LoginForm, UserCreateForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
@@ -148,6 +148,65 @@ def session_qr(s_id):
     return render_template("session_qr.html", session=session)
 
 
+# admin panel pages
+
+@app.route("/admin")
+@login_required
+def admin_panel():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    return render_template("admin_panel.html")
+
+
+@app.route("/admin/users")
+@login_required
+def admin_users():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    users = models.User.query.all()
+    return render_template("admin_users.html", users=users)
+
+
+@app.route("/admin/user/<int:u_id>")
+@login_required
+def admin_manage_user(u_id):
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    user = models.User.query.filter_by(id=u_id).first_or_404()
+    return render_template("admin_manage_user.html", user=user)
+
+
+@app.route("/admin/users/new", methods=['GET', 'POST'])
+@login_required
+def admin_create_user():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    form = UserCreateForm()
+    if form.validate_on_submit():
+        user = models.User(name=form.name.data,
+                           surname=form.surname.data,
+                           email=form.email.data,
+                           is_admin=form.is_admin.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash("User {} {} created.".format(form.name.data, form.surname.data))
+    return render_template("admin_create_user.html", form=form)
+
+
+@app.route("/admin/courses")
+@login_required
+def admin_courses():
+    if not current_user.is_admin:
+        flash("Only admin can do that")
+        redirect(url_for("index"))
+    return render_template("admin_courses.html")
+
+
 # Allow enter and submit attendance data if token is correct
 @app.route("/qrcode/<token_key>", methods=['GET', 'POST'])
 @login_required
@@ -197,10 +256,10 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile/<email>')
+@app.route('/user/<u_id>')
 @login_required
-def profile(email):
-    user = models.User.query.filter_by(email=email).first_or_404()
+def user_profile(u_id):
+    user = models.User.query.filter_by(id=u_id).first_or_404()
     return render_template('profile.html', user=user)
 
 
