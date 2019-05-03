@@ -180,7 +180,7 @@ def admin_users():
     return render_template("admin_users.html", users=users)
 
 
-@app.route("/admin/user/<int:u_id>")
+@app.route("/admin/user/<int:u_id>", methods=['GET', 'POST'])
 @login_required
 def admin_manage_user(u_id):
     if not current_user.is_admin:
@@ -188,6 +188,28 @@ def admin_manage_user(u_id):
         redirect(url_for("index"))
     form = AdminUserModifyForm()
     user = models.User.query.filter_by(id=u_id).first_or_404()
+    if form.validate_on_submit():
+        modified = []
+        if form.name.data and form.name.data != user.name:
+            modified.append("Name")
+            user.name = form.name.data
+        if form.surname.data and form.surname.data != user.surname:
+            modified.append("Surname")
+            user.surname = form.surname.data
+        if form.password.data:
+            modified.append("Password")
+            user.set_password(form.password.data)
+        if form.is_admin.data != user.is_admin:
+            modified.append("Admin status")
+            user.is_admin = form.is_admin.data
+        if modified:
+            flash(", ".join(modified)+" modified!")
+            db.session.add(user)
+            db.session.commit()
+        return redirect(url_for("admin_manage_user", u_id=u_id))
+    form.is_admin.data = user.is_admin
+    form.name.data = user.name
+    form.surname.data = user.surname
     return render_template("admin_manage_user.html", user=user, form=form)
 
 
