@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, url_for, request, jsonify, flash, send_file
 from markupsafe import Markup
 from app import app
-from app.forms import SessionCreateForm, LoginForm, UserCreateForm
+from app.forms import SessionCreateForm, LoginForm, UserCreateForm, AdminUserModifyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app import qrcode
@@ -56,15 +56,18 @@ def created_sessions_list():
 @app.route("/attended_sessions", methods=['GET', 'POST'])
 @login_required
 def attended_sessions_list():
+    courses = models.Course.query.filter(models.User.id == current_user.id).all()
+    courses_choices = [c.name for c in courses]
+    attendance_list = current_user.sessions
     if request.method == 'GET':
-        return render_template("attended_sessions_list.html")
+        return render_template("attended_sessions_list.html", courses_choices=courses_choices, attendance_list=attendance_list)
     elif request.method == 'POST':
-        if request.form['export_button'] == 'Export to xlsx':
+        if request.form['action'] == 'Export to xlsx':
             # formation of xlsx file:
             from xlsxwriter import Workbook
             repository_path = os.path.dirname(os.path.dirname(__file__))
 
-            # workbook init
+            # workbook in it
             workbook = Workbook("temp.xlsx")
             worksheet = workbook.add_worksheet()
 
@@ -103,6 +106,14 @@ def attended_sessions_list():
             workbook_filename = "{}_{}.xlsx".format(current_user.surname, current_user.name)  # endpoint filename
             return send_file(os.path.join(repository_path, "temp.xlsx"), as_attachment=True,
                              attachment_filename=workbook_filename)
+        elif request.form['action'] == 'Search by course':
+            select = request.form.get('courses')
+            attendance_list_all = current_user.sessions
+            attendance_list = []
+            for att in attendance_list_all:
+                if att.course.name == select:
+                    attendance_list.append(att)
+            return render_template("attended_sessions_list.html", courses_choices=courses_choices, attendance_list=attendance_list) 
 
 
 @app.route("/student_sessions/<st_id>")
@@ -175,8 +186,9 @@ def admin_manage_user(u_id):
     if not current_user.is_admin:
         flash("Only admin can do that")
         redirect(url_for("index"))
+    form = AdminUserModifyForm()
     user = models.User.query.filter_by(id=u_id).first_or_404()
-    return render_template("admin_manage_user.html", user=user)
+    return render_template("admin_manage_user.html", user=user, form=form)
 
 
 @app.route("/admin/users/new", methods=['GET', 'POST'])

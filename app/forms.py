@@ -1,7 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, RadioField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from app.models import User
+from app.models import Course
+from app.models import Role
 
 
 class LoginForm(FlaskForm):
@@ -17,6 +20,7 @@ class SessionCreateForm(FlaskForm):
     submit = SubmitField("Create")
 
 
+
 class UserCreateForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()], render_kw={"placeholder": "New user name"})
     surname = StringField("Name", validators=[DataRequired()], render_kw={"placeholder": "New user surname"})
@@ -24,6 +28,7 @@ class UserCreateForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()], render_kw={"placeholder": "Enter password"})
     password_2 = PasswordField("Repeat password", validators=[DataRequired(), EqualTo("password")],
                                render_kw={"placeholder": "Enter password again"})
+    role = QuerySelectField("Role", query_factory=lambda: Role.query.all())
     is_admin = BooleanField("Is admin?")
     submit = SubmitField("Create user")
 
@@ -37,4 +42,5 @@ class AdminUserModifyForm(FlaskForm):
     password = PasswordField("New password", validators=[DataRequired()], render_kw={"placeholder": "Enter password"})
     password_2 = PasswordField("Repeat password", validators=[DataRequired(), EqualTo("password")],
                                render_kw={"placeholder": "Enter password again"})
+    submit = SubmitField("Update profile")
 

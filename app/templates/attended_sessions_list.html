@@ -3,6 +3,19 @@
 {% block app_content %}
     <h1>Sessions attended by {{ current_user.name }} {{ current_user.surname }}</h1>
     <table class="table table-striped">
+    <tr>
+        <form action="" method="POST">
+        <th><select name="courses">
+    {% for course in courses_choices %}
+        <option value="{{ course }}">{{ course }}</option>
+    {% endfor %}
+            </select></th>
+    <th>
+        <input class="btn btn-default" type="submit" name="action" value="Search by course">
+        </th></form>
+    </tr>
+    </table>
+    <table class="table table-striped">
         <caption><b>Sessions</b></caption>
         <tr>
             <th>Course</th>
@@ -11,21 +24,21 @@
             <th>Time</th>
             <th>Finished</th>
         </tr>
-        {% for session in current_user.sessions %}
-            {% if session.is_closed %}
+        {% for attendance_row in attendance_list %}
+            {% if attendance_row.is_closed %}
                 <tr class="success">
                     {% else %}
                 <tr>
             {% endif %}
-        <td>{{ session.course.name }}</td>
-        <td>{{ session.type.name }}</td>
-        <td>{{ session.date.strftime("%d.%m.%Y") }}</td>
-        <td>{{ session.date.strftime("%H:%M:%S") }}</td>
-        <td><b>{{ "Yes" if session.is_closed else "No" }}</b></td>
+        <td>{{ attendance_row.course.name }}</td>
+        <td>{{ attendance_row.type.name }}</td>
+        <td>{{ attendance_row.date.strftime("%d.%m.%Y") }}</td>
+        <td>{{ attendance_row.date.strftime("%H:%M:%S") }}</td>
+        <td><b>{{ "Yes" if attendance_row.is_closed else "No" }}</b></td>
         </tr>
         {% endfor %}
     </table>
     <form action="" method="post">
-        <input class="btn btn-default" type="submit" name="export_button" value="Export to xlsx">
+        <input class="btn btn-default" type="submit" name="action" value="Export to xlsx">
     </form>
 {% endblock %}

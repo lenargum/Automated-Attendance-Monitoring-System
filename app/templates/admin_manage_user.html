@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
     <h1>Admin panel / Users / {{ user.name }} {{ user.surname }}</h1>
+    {{ wtf.quick_form(form) }}
 {% endblock %}
